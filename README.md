@@ -176,6 +176,17 @@ The system uses default estimates for unestimated tickets:
 
 **Done tickets:** 0 hours
 
+### Discovery Idea Grouping
+
+The system groups epics under their parent Discovery Ideas (TR project items) based on Jira issue links. Discovery Ideas are categorized as:
+
+**Recognized Issue Types:**
+- **Deliver** / **Delivery**: Delivery initiatives
+- **Initiative**: Strategic initiatives
+- **Improve**: Improvement initiatives
+
+Only epics linked to TR project items with these issue types will be grouped under Discovery Ideas in the capacity planning view. Epics without such links will appear in the "Other" category.
+
 ## Technology Stack
 
 ### Backend

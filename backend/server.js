@@ -465,7 +465,7 @@ app.get('/api/capacity-planning', async (req, res) => {
           const issueType = linkedIssue.fields?.issuetype?.name;
           const projectKey = linkedIssue.key?.split('-')[0];
 
-          if (projectKey === 'TR' && (issueType === 'Deliver' || issueType === 'Delivery' || issueType === 'Initiative')) {
+          if (projectKey === 'TR' && (issueType === 'Deliver' || issueType === 'Delivery' || issueType === 'Initiative' || issueType === 'Improve')) {
             return {
               key: linkedIssue.key,
               summary: linkedIssue.fields.summary
