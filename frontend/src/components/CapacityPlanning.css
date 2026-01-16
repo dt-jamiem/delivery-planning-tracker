@@ -835,3 +835,132 @@
 .member-badge:hover {
   background: #e0e0e0;
 }
+
+/* Effort Trend */
+.effort-trend-summary {
+  margin-bottom: 1.5rem;
+}
+
+.effort-rate-card {
+  background: white;
+  border-radius: 10px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  text-align: center;
+  max-width: 400px;
+  margin: 0 auto;
+  border: 2px solid #e0e0e0;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.effort-rate-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.effort-rate-card.increasing {
+  border-left: 4px solid #FF6B6B;
+}
+
+.effort-rate-card.decreasing {
+  border-left: 4px solid #A9DE33;
+}
+
+.effort-rate-card.stable {
+  border-left: 4px solid #6B778C;
+}
+
+.effort-rate-label {
+  font-size: 0.9rem;
+  color: #6B778C;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.effort-rate-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #323E48;
+  margin-bottom: 0.5rem;
+}
+
+.effort-rate-indicator {
+  font-size: 0.95rem;
+  color: #6B778C;
+  font-weight: 500;
+}
+
+.effort-trend-table {
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+}
+
+.effort-trend-header {
+  display: grid;
+  grid-template-columns: 2fr 1.2fr 1.2fr 1.2fr 1.5fr;
+  background: linear-gradient(135deg, #323E48 0%, #44546A 100%);
+  color: white;
+  padding: 0.875rem 1rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.effort-trend-row {
+  display: grid;
+  grid-template-columns: 2fr 1.2fr 1.2fr 1.2fr 1.5fr;
+  padding: 0.875rem 1rem;
+  border-bottom: 1px solid #e0e0e0;
+  transition: background-color 0.2s ease;
+  align-items: center;
+}
+
+.effort-trend-row:hover {
+  background-color: #f5f7fa;
+}
+
+.effort-trend-row:last-child {
+  border-bottom: none;
+}
+
+.effort-col-week {
+  color: #323E48;
+  font-weight: 500;
+}
+
+.effort-col-added,
+.effort-col-removed,
+.effort-col-net,
+.effort-col-tickets {
+  text-align: center;
+}
+
+.effort-added {
+  color: #FF6B6B;
+  font-weight: 600;
+}
+
+.effort-removed {
+  color: #A9DE33;
+  font-weight: 600;
+}
+
+.net-positive {
+  color: #FF6B6B;
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+
+.net-negative {
+  color: #A9DE33;
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+
+.net-neutral {
+  color: #6B778C;
+  font-weight: 600;
+}

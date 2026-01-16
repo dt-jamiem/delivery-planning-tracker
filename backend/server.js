@@ -422,6 +422,96 @@ app.get('/api/capacity-planning', async (req, res) => {
     const weeksInPeriod = Math.ceil(days / 7);
     const velocity = weeksInPeriod > 0 ? Math.round(resolvedIssues.length / weeksInPeriod) : 0;
 
+    // Calculate weekly effort trends
+    const weeklyEffortTrends = {};
+
+    // Initialize weeks
+    for (let i = 0; i < Math.ceil(days / 7); i++) {
+      const weekStart = new Date();
+      weekStart.setDate(weekStart.getDate() - (i * 7));
+      const weekEnd = new Date(weekStart);
+      weekEnd.setDate(weekEnd.getDate() - 7);
+
+      const weekKey = `Week ${i + 1}`;
+      const weekLabel = `${weekEnd.toISOString().split('T')[0]} to ${weekStart.toISOString().split('T')[0]}`;
+
+      weeklyEffortTrends[weekKey] = {
+        label: weekLabel,
+        startDate: weekEnd.toISOString().split('T')[0],
+        endDate: weekStart.toISOString().split('T')[0],
+        effortAdded: 0,
+        effortRemoved: 0,
+        netEffortChange: 0,
+        ticketsCreated: 0,
+        ticketsResolved: 0
+      };
+    }
+
+    // Calculate effort added from created tickets
+    recentIssues.forEach(issue => {
+      const createdDate = new Date(issue.fields.created);
+      const daysAgo = Math.floor((new Date() - createdDate) / (1000 * 60 * 60 * 24));
+      const weekIndex = Math.floor(daysAgo / 7);
+      const weekKey = `Week ${weekIndex + 1}`;
+
+      if (weeklyEffortTrends[weekKey]) {
+        weeklyEffortTrends[weekKey].ticketsCreated++;
+
+        // Calculate effort for this ticket
+        if (issue.fields.timeoriginalestimate) {
+          weeklyEffortTrends[weekKey].effortAdded += issue.fields.timeoriginalestimate / 3600;
+        } else {
+          const defaultEst = getDefaultEstimate(issue);
+          if (defaultEst > 0) {
+            weeklyEffortTrends[weekKey].effortAdded += defaultEst / 3600;
+          }
+        }
+      }
+    });
+
+    // Calculate effort removed from resolved tickets
+    resolvedIssues.forEach(issue => {
+      if (issue.fields.resolutiondate) {
+        const resolvedDate = new Date(issue.fields.resolutiondate);
+        const daysAgo = Math.floor((new Date() - resolvedDate) / (1000 * 60 * 60 * 24));
+        const weekIndex = Math.floor(daysAgo / 7);
+        const weekKey = `Week ${weekIndex + 1}`;
+
+        if (weeklyEffortTrends[weekKey]) {
+          weeklyEffortTrends[weekKey].ticketsResolved++;
+
+          // Calculate effort for this ticket
+          if (issue.fields.timeoriginalestimate) {
+            weeklyEffortTrends[weekKey].effortRemoved += issue.fields.timeoriginalestimate / 3600;
+          } else {
+            const defaultEst = getDefaultEstimate(issue);
+            if (defaultEst > 0) {
+              weeklyEffortTrends[weekKey].effortRemoved += defaultEst / 3600;
+            }
+          }
+        }
+      }
+    });
+
+    // Calculate net changes and round values
+    Object.keys(weeklyEffortTrends).forEach(weekKey => {
+      const week = weeklyEffortTrends[weekKey];
+      week.effortAdded = Math.round(week.effortAdded);
+      week.effortRemoved = Math.round(week.effortRemoved);
+      week.netEffortChange = week.effortAdded - week.effortRemoved;
+    });
+
+    // Convert to array and sort by date (most recent first)
+    const effortTrendData = Object.entries(weeklyEffortTrends)
+      .map(([key, data]) => ({ week: key, ...data }))
+      .sort((a, b) => new Date(b.endDate) - new Date(a.endDate));
+
+    // Calculate rate of change (average weekly change)
+    const validWeeks = effortTrendData.filter(w => w.ticketsCreated > 0 || w.ticketsResolved > 0);
+    const avgWeeklyChange = validWeeks.length > 0
+      ? Math.round(validWeeks.reduce((sum, w) => sum + w.netEffortChange, 0) / validWeeks.length)
+      : 0;
+
     // Create hierarchical structure
     const sortedAssignees = Object.entries(assigneeWorkload)
       .map(([teamName, teamData]) => {
@@ -844,11 +934,13 @@ app.get('/api/capacity-planning', async (req, res) => {
         velocity: velocity,
         period: days,
         workingDays: workingDaysInPeriod,
-        hoursPerDay: hoursPerDay
+        hoursPerDay: hoursPerDay,
+        avgWeeklyEffortChange: avgWeeklyChange
       },
       teamCapacity: teamCapacityMetrics,
       assigneeWorkload: sortedAssignees,
       ticketFlow: flowData,
+      effortTrend: effortTrendData,
       parentGrouping: {
         bau: bauGroups,
         deliver: deliverGroups,

@@ -8,6 +8,7 @@ A standalone application extracted from the jira-dashboard project, focused spec
 - **Team Workload Distribution**: View open tickets and estimated effort by team and individual
 - **Work Categories**: Organize work into BAU, Deliver, and Improve buckets
 - **Ticket Flow Trends**: Visualize ticket creation and resolution trends over time
+- **Effort Trend Analysis**: Track the rate of change in estimated effort on a weekly basis over a rolling 30-day period
 - **Capacity Insights**: Get actionable insights on workload trends and team utilization
 
 ## Project Structure
@@ -114,7 +115,7 @@ Health check endpoint to verify the API is running.
 ```
 
 ### GET /api/capacity-planning
-Fetches capacity planning data including team workload, ticket flow, and capacity metrics.
+Fetches capacity planning data including team workload, ticket flow, effort trends, and capacity metrics.
 
 **Query Parameters:**
 - `days` (optional): Number of days to look back (default: 30)
@@ -130,11 +131,25 @@ Fetches capacity planning data including team workload, ticket flow, and capacit
     "velocity": 38,
     "period": 30,
     "workingDays": 21,
-    "hoursPerDay": 6
+    "hoursPerDay": 6,
+    "avgWeeklyEffortChange": 15
   },
   "teamCapacity": { ... },
   "assigneeWorkload": [ ... ],
   "ticketFlow": [ ... ],
+  "effortTrend": [
+    {
+      "week": "Week 1",
+      "label": "2025-01-09 to 2025-01-16",
+      "startDate": "2025-01-09",
+      "endDate": "2025-01-16",
+      "effortAdded": 120,
+      "effortRemoved": 80,
+      "netEffortChange": 40,
+      "ticketsCreated": 15,
+      "ticketsResolved": 10
+    }
+  ],
   "parentGrouping": {
     "bau": [ ... ],
     "deliver": [ ... ],

@@ -15,7 +15,7 @@ function CapacityPlanning({ data }) {
     );
   }
 
-  const { summary, assigneeWorkload, ticketFlow, parentGrouping, teamCapacity } = data;
+  const { summary, assigneeWorkload, ticketFlow, parentGrouping, teamCapacity, effortTrend } = data;
 
   const toggleGroup = (groupKey) => {
     setExpandedGroups(prev => ({
@@ -473,6 +473,54 @@ function CapacityPlanning({ data }) {
           </div>
         </div>
       </div>
+
+      {/* Effort Trend Chart */}
+      {effortTrend && effortTrend.length > 0 && (
+        <div className="capacity-section">
+          <h3>Estimated Effort Trend (Weekly)</h3>
+          <div className="effort-trend-summary">
+            <div className={`effort-rate-card ${summary.avgWeeklyEffortChange > 0 ? 'increasing' : summary.avgWeeklyEffortChange < 0 ? 'decreasing' : 'stable'}`}>
+              <div className="effort-rate-label">Average Weekly Change</div>
+              <div className="effort-rate-value">
+                {summary.avgWeeklyEffortChange > 0 ? '+' : ''}{summary.avgWeeklyEffortChange}h/week
+              </div>
+              <div className="effort-rate-indicator">
+                {summary.avgWeeklyEffortChange > 0 && '📈 Effort increasing'}
+                {summary.avgWeeklyEffortChange < 0 && '📉 Effort decreasing'}
+                {summary.avgWeeklyEffortChange === 0 && '➡️ Effort stable'}
+              </div>
+            </div>
+          </div>
+          <div className="effort-trend-table">
+            <div className="effort-trend-header">
+              <div className="effort-col-week">Week Period</div>
+              <div className="effort-col-added">Effort Added (h)</div>
+              <div className="effort-col-removed">Effort Removed (h)</div>
+              <div className="effort-col-net">Net Change (h)</div>
+              <div className="effort-col-tickets">Tickets (Created/Resolved)</div>
+            </div>
+            {effortTrend.map((week, index) => (
+              <div key={index} className="effort-trend-row">
+                <div className="effort-col-week">{week.label}</div>
+                <div className="effort-col-added">
+                  <span className="effort-added">+{week.effortAdded}</span>
+                </div>
+                <div className="effort-col-removed">
+                  <span className="effort-removed">-{week.effortRemoved}</span>
+                </div>
+                <div className="effort-col-net">
+                  <span className={week.netEffortChange > 0 ? 'net-positive' : week.netEffortChange < 0 ? 'net-negative' : 'net-neutral'}>
+                    {week.netEffortChange > 0 ? '+' : ''}{week.netEffortChange}
+                  </span>
+                </div>
+                <div className="effort-col-tickets">
+                  {week.ticketsCreated} / {week.ticketsResolved}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Key Insights */}
       <div className="capacity-section">
