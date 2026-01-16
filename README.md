@@ -4,12 +4,22 @@ A standalone application extracted from the jira-dashboard project, focused spec
 
 ## Features
 
+### Tab-Based Navigation
+- **Overview Tab**: High-level capacity insights, team utilization, and workload distribution
+- **Buckets Tab**: Detailed work breakdown by BAU, Deliver, and Improve categories
+- **Trends Tab**: Historical ticket flow and effort trend analysis
+
+### Key Metrics
+- **Capacity Insights**: Four key metrics displayed at the top of the Overview tab:
+  - Average Weekly Change: Track the rate of change in estimated effort (hours/week)
+  - DTI Backlog Size: Full-time equivalent (FTE) engineers needed for 30 days to clear DTI requests
+  - Delivery Backlog: FTE engineers needed for 30 days to clear delivery work
+  - Initiatives Backlog: FTE engineers needed for 30 days to clear improvement initiatives
 - **Team Capacity Utilization**: Track team capacity and workload across engineering teams
 - **Team Workload Distribution**: View open tickets and estimated effort by team and individual
 - **Work Categories**: Organize work into BAU, Deliver, and Improve buckets
 - **Ticket Flow Trends**: Visualize ticket creation and resolution trends over time
-- **Effort Trend Analysis**: Track the rate of change in estimated effort on a weekly basis over a rolling 30-day period
-- **Capacity Insights**: Get actionable insights on workload trends and team utilization
+- **Effort Trend Analysis**: Weekly breakdown of effort added vs removed with net change tracking
 
 ## Project Structure
 

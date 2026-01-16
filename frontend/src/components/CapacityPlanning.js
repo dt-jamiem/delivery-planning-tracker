@@ -3,6 +3,7 @@ import './CapacityPlanning.css';
 
 function CapacityPlanning({ data }) {
   const [expandedGroups, setExpandedGroups] = useState({});
+  const [activeTab, setActiveTab] = useState('overview');
 
   if (!data) {
     return (
@@ -179,63 +180,130 @@ function CapacityPlanning({ data }) {
   const netFlow = summary.ticketsCreated - summary.ticketsResolved;
   const flowTrend = netFlow > 0 ? 'increasing' : netFlow < 0 ? 'decreasing' : 'stable';
 
+  // Calculate backlog FTE for different work types (30 days * 6 hours per day = 180 hours)
+  const hoursPerFTE30Days = 30 * 6;
+
+  // DTI backlog (BAU)
+  let dtiBacklogHours = 0;
+  let dtiTicketCount = 0;
+  if (parentGrouping && parentGrouping.bau) {
+    const dtiRequests = parentGrouping.bau.find(group => group.name === 'DTI Requests' || group.key === 'DTI Requests');
+    if (dtiRequests) {
+      dtiBacklogHours = dtiRequests.totalHours || 0;
+      dtiTicketCount = dtiRequests.tickets || 0;
+    }
+  }
+  const dtiFTENeeded = dtiBacklogHours > 0 ? (dtiBacklogHours / hoursPerFTE30Days).toFixed(1) : 0;
+
+  // Delivery backlog
+  let deliveryBacklogHours = 0;
+  let deliveryTicketCount = 0;
+  if (parentGrouping && parentGrouping.deliver) {
+    parentGrouping.deliver.forEach(group => {
+      deliveryBacklogHours += group.totalHours || 0;
+      deliveryTicketCount += group.tickets || 0;
+    });
+  }
+  const deliveryFTENeeded = deliveryBacklogHours > 0 ? (deliveryBacklogHours / hoursPerFTE30Days).toFixed(1) : 0;
+
+  // Initiatives backlog (Improve)
+  let initiativesBacklogHours = 0;
+  let initiativesTicketCount = 0;
+  if (parentGrouping && parentGrouping.improve) {
+    parentGrouping.improve.forEach(group => {
+      initiativesBacklogHours += group.totalHours || 0;
+      initiativesTicketCount += group.tickets || 0;
+    });
+  }
+  const initiativesFTENeeded = initiativesBacklogHours > 0 ? (initiativesBacklogHours / hoursPerFTE30Days).toFixed(1) : 0;
+
   return (
     <div className="capacity-planning">
       <h2>Capacity Planning</h2>
       <p className="period-note">Last {summary.period} days</p>
 
-      {/* Guess Estimate Rules Summary */}
-      <div className="guess-rules-summary">
-        <h3>Guess Estimate Rules for Unestimated Tickets</h3>
-        <div className="rules-grid">
-          <div className="rule-card">
-            <div className="rule-header">User Stories & Tasks</div>
-            <div className="rule-content">
-              <div className="rule-row">
-                <span className="status-badge todo">To Do</span>
-                <span className="estimate-value">8 hours</span>
-              </div>
-              <div className="rule-row">
-                <span className="status-badge inprogress">In Progress</span>
-                <span className="estimate-value">4 hours</span>
-              </div>
+      {/* Tab Navigation */}
+      <div className="tabs-container">
+        <button
+          className={`tab-button ${activeTab === 'overview' ? 'active' : ''}`}
+          onClick={() => setActiveTab('overview')}
+        >
+          Overview
+        </button>
+        <button
+          className={`tab-button ${activeTab === 'buckets' ? 'active' : ''}`}
+          onClick={() => setActiveTab('buckets')}
+        >
+          Buckets
+        </button>
+        <button
+          className={`tab-button ${activeTab === 'trends' ? 'active' : ''}`}
+          onClick={() => setActiveTab('trends')}
+        >
+          Trends
+        </button>
+      </div>
+
+      {/* Overview Tab Content */}
+      {activeTab === 'overview' && (
+        <div className="tab-content">
+
+      {/* Capacity Insights */}
+      <div className="capacity-section">
+        <h3>Capacity Insights</h3>
+        <div className="capacity-insights">
+          <div className={`insight-card ${summary.avgWeeklyEffortChange > 0 ? 'warning' : summary.avgWeeklyEffortChange < 0 ? 'positive' : ''}`}>
+            <div className="insight-label">Average Weekly Change</div>
+            <div className="insight-value">
+              {summary.avgWeeklyEffortChange > 0 ? '+' : ''}{summary.avgWeeklyEffortChange}h/week
             </div>
-            <div className="rule-note">Any project</div>
+            <div className="insight-detail">
+              {summary.avgWeeklyEffortChange > 0 && '📈 Effort increasing'}
+              {summary.avgWeeklyEffortChange < 0 && '📉 Effort decreasing'}
+              {summary.avgWeeklyEffortChange === 0 && '➡️ Effort stable'}
+            </div>
           </div>
 
-          <div className="rule-card">
-            <div className="rule-header">DTI Higher Complexity</div>
-            <div className="rule-content">
-              <div className="rule-row">
-                <span className="status-badge todo">To Do</span>
-                <span className="estimate-value">6 hours</span>
-              </div>
-              <div className="rule-row">
-                <span className="status-badge inprogress">In Progress</span>
-                <span className="estimate-value">3 hours</span>
-              </div>
+          <div className={`insight-card ${dtiFTENeeded > 2 ? 'warning' : 'positive'}`}>
+            <div className="insight-label">DTI Backlog Size</div>
+            <div className="insight-value">
+              {dtiFTENeeded} FTE for 30 days
             </div>
-            <div className="rule-note">Build/Deployment Issues, Connectivity, Branch Request</div>
+            <div className="insight-detail">
+              {dtiTicketCount} tickets totaling {dtiBacklogHours}h to clear DTI backlog
+            </div>
           </div>
 
-          <div className="rule-card">
-            <div className="rule-header">DTI Standard</div>
-            <div className="rule-content">
-              <div className="rule-row">
-                <span className="status-badge todo">To Do</span>
-                <span className="estimate-value">4 hours</span>
-              </div>
-              <div className="rule-row">
-                <span className="status-badge inprogress">In Progress</span>
-                <span className="estimate-value">2 hours</span>
-              </div>
+          <div className={`insight-card ${deliveryFTENeeded > 3 ? 'warning' : 'positive'}`}>
+            <div className="insight-label">Delivery Backlog</div>
+            <div className="insight-value">
+              {deliveryFTENeeded} FTE for 30 days
             </div>
-            <div className="rule-note">All other DTI request types</div>
+            <div className="insight-detail">
+              {deliveryTicketCount} tickets totaling {deliveryBacklogHours}h to clear delivery work
+            </div>
+          </div>
+
+          <div className={`insight-card ${initiativesFTENeeded > 3 ? 'warning' : 'positive'}`}>
+            <div className="insight-label">Initiatives Backlog</div>
+            <div className="insight-value">
+              {initiativesFTENeeded} FTE for 30 days
+            </div>
+            <div className="insight-detail">
+              {initiativesTicketCount} tickets totaling {initiativesBacklogHours}h to clear initiatives
+            </div>
           </div>
         </div>
-        <div className="rules-footer">
-          Tickets with existing estimates use actual values • Done tickets = 0 hours
-        </div>
+      </div>
+
+      {/* Guess Estimate Rules Info */}
+      <div className="info-note">
+        <p>
+          <strong>Estimate Notes:</strong> Tickets with existing estimates use actual values.
+          For unestimated tickets, default estimates are applied: User Stories/Tasks (8h To Do, 4h In Progress),
+          DTI Higher Complexity requests like Build/Deployment Issues (6h To Do, 3h In Progress),
+          and DTI Standard requests (4h To Do, 2h In Progress). Done tickets = 0 hours.
+        </p>
       </div>
 
       {/* Team Capacity Utilization */}
@@ -404,163 +472,135 @@ function CapacityPlanning({ data }) {
           })}
         </div>
       </div>
-
-      {/* Work Categories */}
-      {parentGrouping && (
-        <>
-          {renderGroupingSection(parentGrouping.bau, 'Bucket 1: BAU')}
-          {renderGroupingSection(parentGrouping.deliver, 'Bucket 2: Deliver')}
-          {renderGroupingSection(parentGrouping.improve, 'Bucket 3: Improve')}
-        </>
-      )}
-
-      {/* Ticket Flow Chart */}
-      <div className="capacity-section">
-        <h3>Ticket Flow Trend</h3>
-        <div className="flow-chart">
-          <div className="flow-legend">
-            <div className="flow-legend-item">
-              <span className="flow-legend-color created"></span>
-              <span>Created</span>
-            </div>
-            <div className="flow-legend-item">
-              <span className="flow-legend-color resolved"></span>
-              <span>Resolved</span>
-            </div>
-          </div>
-          <svg className="flow-svg" viewBox="0 0 800 200" preserveAspectRatio="none">
-            {/* Grid lines */}
-            {[0, 0.25, 0.5, 0.75, 1].map((factor, i) => (
-              <line
-                key={i}
-                x1="0"
-                y1={200 - (factor * 180)}
-                x2="800"
-                y2={200 - (factor * 180)}
-                stroke="#e0e0e0"
-                strokeWidth="1"
-              />
-            ))}
-
-            {/* Created line */}
-            <polyline
-              fill="none"
-              stroke="#A9DE33"
-              strokeWidth="2"
-              points={ticketFlow.map((point, i) => {
-                const x = (i / (ticketFlow.length - 1)) * 800;
-                const y = 200 - ((point.created / maxFlow) * 180);
-                return `${x},${y}`;
-              }).join(' ')}
-            />
-
-            {/* Resolved line */}
-            <polyline
-              fill="none"
-              stroke="#44546A"
-              strokeWidth="2"
-              points={ticketFlow.map((point, i) => {
-                const x = (i / (ticketFlow.length - 1)) * 800;
-                const y = 200 - ((point.resolved / maxFlow) * 180);
-                return `${x},${y}`;
-              }).join(' ')}
-            />
-          </svg>
-          <div className="flow-x-axis">
-            <span>{ticketFlow[0]?.date}</span>
-            <span>{ticketFlow[Math.floor(ticketFlow.length / 2)]?.date}</span>
-            <span>{ticketFlow[ticketFlow.length - 1]?.date}</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Effort Trend Chart */}
-      {effortTrend && effortTrend.length > 0 && (
-        <div className="capacity-section">
-          <h3>Estimated Effort Trend (Weekly)</h3>
-          <div className="effort-trend-summary">
-            <div className={`effort-rate-card ${summary.avgWeeklyEffortChange > 0 ? 'increasing' : summary.avgWeeklyEffortChange < 0 ? 'decreasing' : 'stable'}`}>
-              <div className="effort-rate-label">Average Weekly Change</div>
-              <div className="effort-rate-value">
-                {summary.avgWeeklyEffortChange > 0 ? '+' : ''}{summary.avgWeeklyEffortChange}h/week
-              </div>
-              <div className="effort-rate-indicator">
-                {summary.avgWeeklyEffortChange > 0 && '📈 Effort increasing'}
-                {summary.avgWeeklyEffortChange < 0 && '📉 Effort decreasing'}
-                {summary.avgWeeklyEffortChange === 0 && '➡️ Effort stable'}
-              </div>
-            </div>
-          </div>
-          <div className="effort-trend-table">
-            <div className="effort-trend-header">
-              <div className="effort-col-week">Week Period</div>
-              <div className="effort-col-added">Effort Added (h)</div>
-              <div className="effort-col-removed">Effort Removed (h)</div>
-              <div className="effort-col-net">Net Change (h)</div>
-              <div className="effort-col-tickets">Tickets (Created/Resolved)</div>
-            </div>
-            {effortTrend.map((week, index) => (
-              <div key={index} className="effort-trend-row">
-                <div className="effort-col-week">{week.label}</div>
-                <div className="effort-col-added">
-                  <span className="effort-added">+{week.effortAdded}</span>
-                </div>
-                <div className="effort-col-removed">
-                  <span className="effort-removed">-{week.effortRemoved}</span>
-                </div>
-                <div className="effort-col-net">
-                  <span className={week.netEffortChange > 0 ? 'net-positive' : week.netEffortChange < 0 ? 'net-negative' : 'net-neutral'}>
-                    {week.netEffortChange > 0 ? '+' : ''}{week.netEffortChange}
-                  </span>
-                </div>
-                <div className="effort-col-tickets">
-                  {week.ticketsCreated} / {week.ticketsResolved}
-                </div>
-              </div>
-            ))}
-          </div>
         </div>
       )}
 
-      {/* Key Insights */}
-      <div className="capacity-section">
-        <h3>Capacity Insights</h3>
-        <div className="capacity-insights">
-          <div className={`insight-card ${flowTrend === 'increasing' ? 'warning' : 'positive'}`}>
-            <div className="insight-label">Workload Trend</div>
-            <div className="insight-value">
-              {flowTrend === 'increasing' && 'Backlog Growing'}
-              {flowTrend === 'decreasing' && 'Backlog Clearing'}
-              {flowTrend === 'stable' && 'Stable Capacity'}
-            </div>
-            <div className="insight-detail">
-              {netFlow > 0 && `${netFlow} more tickets created than resolved`}
-              {netFlow < 0 && `${Math.abs(netFlow)} more tickets resolved than created`}
-              {netFlow === 0 && 'Balanced ticket creation and resolution'}
-            </div>
-          </div>
+      {/* Buckets Tab Content */}
+      {activeTab === 'buckets' && (
+        <div className="tab-content">
+          {/* Work Categories */}
+          {parentGrouping && (
+            <>
+              {renderGroupingSection(parentGrouping.bau, 'Bucket 1: BAU')}
+              {renderGroupingSection(parentGrouping.deliver, 'Bucket 2: Deliver')}
+              {renderGroupingSection(parentGrouping.improve, 'Bucket 3: Improve')}
+            </>
+          )}
+        </div>
+      )}
 
-          <div className="insight-card">
-            <div className="insight-label">Team Utilization</div>
-            <div className="insight-value">
-              {assigneeWorkload.filter(a => a.name !== 'Unassigned').length} active members
+      {/* Trends Tab Content */}
+      {activeTab === 'trends' && (
+        <div className="tab-content">
+          {/* Effort Trend Chart */}
+          {effortTrend && effortTrend.length > 0 && (
+            <div className="capacity-section">
+              <h3>Estimated Effort Trend (Weekly)</h3>
+              <div className="effort-trend-summary">
+                <div className={`effort-rate-card ${summary.avgWeeklyEffortChange > 0 ? 'increasing' : summary.avgWeeklyEffortChange < 0 ? 'decreasing' : 'stable'}`}>
+                  <div className="effort-rate-label">Average Weekly Change</div>
+                  <div className="effort-rate-value">
+                    {summary.avgWeeklyEffortChange > 0 ? '+' : ''}{summary.avgWeeklyEffortChange}h/week
+                  </div>
+                  <div className="effort-rate-indicator">
+                    {summary.avgWeeklyEffortChange > 0 && '📈 Effort increasing'}
+                    {summary.avgWeeklyEffortChange < 0 && '📉 Effort decreasing'}
+                    {summary.avgWeeklyEffortChange === 0 && '➡️ Effort stable'}
+                  </div>
+                </div>
+              </div>
+              <div className="effort-trend-table">
+                <div className="effort-trend-header">
+                  <div className="effort-col-week">Week Period</div>
+                  <div className="effort-col-added">Effort Added (h)</div>
+                  <div className="effort-col-removed">Effort Removed (h)</div>
+                  <div className="effort-col-net">Net Change (h)</div>
+                  <div className="effort-col-tickets">Tickets (Created/Resolved)</div>
+                </div>
+                {effortTrend.map((week, index) => (
+                  <div key={index} className="effort-trend-row">
+                    <div className="effort-col-week">{week.label}</div>
+                    <div className="effort-col-added">
+                      <span className="effort-added">+{week.effortAdded}</span>
+                    </div>
+                    <div className="effort-col-removed">
+                      <span className="effort-removed">-{week.effortRemoved}</span>
+                    </div>
+                    <div className="effort-col-net">
+                      <span className={week.netEffortChange > 0 ? 'net-positive' : week.netEffortChange < 0 ? 'net-negative' : 'net-neutral'}>
+                        {week.netEffortChange > 0 ? '+' : ''}{week.netEffortChange}
+                      </span>
+                    </div>
+                    <div className="effort-col-tickets">
+                      {week.ticketsCreated} / {week.ticketsResolved}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
-            <div className="insight-detail">
-              Average {Math.round(summary.totalOpenTickets / Math.max(assigneeWorkload.filter(a => a.name !== 'Unassigned').length, 1))} tickets per person
-            </div>
-          </div>
+          )}
 
-          <div className={`insight-card ${summary.avgResolutionTime > 7 ? 'warning' : 'positive'}`}>
-            <div className="insight-label">Resolution Speed</div>
-            <div className="insight-value">{summary.avgResolutionTime} days average</div>
-            <div className="insight-detail">
-              {summary.avgResolutionTime <= 5 && 'Meeting target (≤5 days)'}
-              {summary.avgResolutionTime > 5 && summary.avgResolutionTime <= 7 && 'Slightly above target'}
-              {summary.avgResolutionTime > 7 && 'Exceeds target - may need attention'}
+          {/* Ticket Flow Chart */}
+          <div className="capacity-section">
+            <h3>Ticket Flow Trend</h3>
+            <div className="flow-chart">
+              <div className="flow-legend">
+                <div className="flow-legend-item">
+                  <span className="flow-legend-color created"></span>
+                  <span>Created</span>
+                </div>
+                <div className="flow-legend-item">
+                  <span className="flow-legend-color resolved"></span>
+                  <span>Resolved</span>
+                </div>
+              </div>
+              <svg className="flow-svg" viewBox="0 0 800 200" preserveAspectRatio="none">
+                {/* Grid lines */}
+                {[0, 0.25, 0.5, 0.75, 1].map((factor, i) => (
+                  <line
+                    key={i}
+                    x1="0"
+                    y1={200 - (factor * 180)}
+                    x2="800"
+                    y2={200 - (factor * 180)}
+                    stroke="#e0e0e0"
+                    strokeWidth="1"
+                  />
+                ))}
+
+                {/* Created line */}
+                <polyline
+                  fill="none"
+                  stroke="#A9DE33"
+                  strokeWidth="2"
+                  points={ticketFlow.map((point, i) => {
+                    const x = (i / (ticketFlow.length - 1)) * 800;
+                    const y = 200 - ((point.created / maxFlow) * 180);
+                    return `${x},${y}`;
+                  }).join(' ')}
+                />
+
+                {/* Resolved line */}
+                <polyline
+                  fill="none"
+                  stroke="#44546A"
+                  strokeWidth="2"
+                  points={ticketFlow.map((point, i) => {
+                    const x = (i / (ticketFlow.length - 1)) * 800;
+                    const y = 200 - ((point.resolved / maxFlow) * 180);
+                    return `${x},${y}`;
+                  }).join(' ')}
+                />
+              </svg>
+              <div className="flow-x-axis">
+                <span>{ticketFlow[0]?.date}</span>
+                <span>{ticketFlow[Math.floor(ticketFlow.length / 2)]?.date}</span>
+                <span>{ticketFlow[ticketFlow.length - 1]?.date}</span>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
