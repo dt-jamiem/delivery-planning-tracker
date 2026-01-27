@@ -43,7 +43,7 @@ app.get('/api/capacity-planning', async (req, res) => {
         members: ['Garvin Wong', 'Adrian Mazur']
       },
       'DevOps': {
-        engineers: 4,
+        engineers: 3.5, // Alex Eastlake is 50% allocated (0.5 FTE)
         members: ['Phill Dellow', 'Vakhtangi Mestvirishvili', 'Robert Higgins', 'Alex Eastlake']
       },
       'Technology Operations': {
