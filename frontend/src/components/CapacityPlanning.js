@@ -25,6 +25,39 @@ function CapacityPlanning({ data }) {
     }));
   };
 
+  // Generate Jira URL for team filter - matches backend team assignment logic
+  const generateJiraTeamUrl = (teamName, members) => {
+    const baseUrl = 'https://datatorque.atlassian.net/issues/';
+
+    // Build assignee list for team members
+    const assigneeList = members.map(m => `"${m}"`).join(', ');
+
+    let jql = '';
+
+    // Build team-specific JQL matching backend priority logic
+    // Use project keys: TG (Technology Group), TR (Technology Roadmap)
+    if (teamName === 'DBA') {
+      // DBA: Team UUID OR assigned to DBA members
+      jql = `("Team[Team]" = a092fa48-f541-4358-90b8-ba6caccceb72 OR (project IN (TG, TechOps, DEVOPS, DBA, DTI, INFRA, TR) AND assignee IN (${assigneeList}))) AND statusCategory != Done AND issuetype != Epic`;
+    } else if (teamName === 'DevOps') {
+      // DevOps: Based on baseJQL projects + Team field + assignee fallback (excluding DBA members but allowing unassigned)
+      // Note: Add both "Phill Dellow" and "Phillip Dellow" to catch name variations
+      const devOpsAssignees = `"Phill Dellow", "Phillip Dellow", "Vakhtangi Mestvirishvili", "Robert Higgins", "Alex Eastlake"`;
+      jql = `((project = DEVOPS OR "Team" = "DevOps" OR (project IN (TG, TechOps, DEVOPS, DBA, DTI, INFRA, TR) AND assignee IN (${devOpsAssignees})) OR (project IN (TG, TechOps, DEVOPS, DBA, DTI, INFRA, TR) AND "Team[Team]" = "9b7aba3a-a76b-46b8-8a3b-658baad7c1a3")) AND (assignee IS EMPTY OR assignee NOT IN ("Garvin Wong", "Adrian Mazur"))) AND issuetype != Epic AND statusCategory != Done`;
+    } else if (teamName === 'Technology Operations') {
+      // Tech Ops: INFRA project OR Team=Tech Ops OR assigned to Tech Ops members (excluding DBA members but allowing unassigned)
+      jql = `((project = INFRA OR "Team" = "Technology Operations" OR (project IN (TG, TechOps, DEVOPS, DBA, DTI, INFRA, TR) AND assignee IN (${assigneeList})) OR (project IN (TG, TechOps, DEVOPS, DBA, DTI, INFRA, TR) AND "Team[Team]" = "01c3b859-1307-41e3-8a88-24c701dd1713")) AND (assignee IS EMPTY OR assignee NOT IN ("Garvin Wong", "Adrian Mazur"))) AND issuetype != Epic AND statusCategory != Done`;
+    } else if (teamName === 'Private Cloud') {
+      // Private Cloud: Team UUID OR assigned to Keith/Mike
+      jql = `("Team[Team]" = d38d3529-7bff-4e2c-a747-1e7f2d6e61e9 OR (project IN (TG, TechOps, DEVOPS, DBA, DTI, INFRA, TR) AND assignee IN ("Keith Wijey-Wardna", "Mike Cave"))) AND statusCategory != Done AND issuetype != Epic`;
+    } else {
+      // Fallback: assignee filter across all projects
+      jql = `(project IN (TG, TechOps, DEVOPS, DBA, DTI, INFRA, TR) AND assignee IN (${assigneeList})) AND issuetype != Epic AND statusCategory != Done`;
+    }
+
+    return `${baseUrl}?jql=${encodeURIComponent(jql)}`;
+  };
+
   // Helper function to render a parent grouping table section
   const renderGroupingSection = (groups, sectionTitle) => {
     if (!groups || groups.length === 0) return null;
@@ -363,6 +396,17 @@ function CapacityPlanning({ data }) {
                         <span key={idx} className="member-badge">{member}</span>
                       ))}
                     </div>
+                  </div>
+
+                  <div className="team-jira-link">
+                    <a
+                      href={generateJiraTeamUrl(teamName, metrics.members)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="jira-link-button"
+                    >
+                      View {teamName} tickets in Jira →
+                    </a>
                   </div>
                 </div>
               );

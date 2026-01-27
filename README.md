@@ -16,6 +16,8 @@ A standalone application extracted from the jira-dashboard project, focused spec
   - Delivery Backlog: FTE engineers needed for 30 days to clear delivery work
   - Initiatives Backlog: FTE engineers needed for 30 days to clear improvement initiatives
 - **Team Capacity Utilization**: Track team capacity and workload across engineering teams
+  - Each team tile includes a Jira link button that opens a filtered view of all tickets for that team
+  - JQL queries match the backend's team assignment logic for accurate filtering
 - **Team Workload Distribution**: View open tickets and estimated effort by team and individual
 - **Work Categories**: Organize work into BAU, Deliver, and Improve buckets
 - **Ticket Flow Trends**: Visualize ticket creation and resolution trends over time

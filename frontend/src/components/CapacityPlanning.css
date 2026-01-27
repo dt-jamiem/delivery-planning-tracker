@@ -808,6 +808,37 @@
   background: #e0e0e0;
 }
 
+.team-jira-link {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e0e0e0;
+  text-align: center;
+}
+
+.jira-link-button {
+  display: inline-block;
+  padding: 0.6rem 1.25rem;
+  background: #0052CC;
+  color: white;
+  text-decoration: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 82, 204, 0.2);
+}
+
+.jira-link-button:hover {
+  background: #0065FF;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 82, 204, 0.3);
+}
+
+.jira-link-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 82, 204, 0.2);
+}
+
 /* Effort Trend */
 .effort-trend-summary {
   margin-bottom: 1.5rem;
