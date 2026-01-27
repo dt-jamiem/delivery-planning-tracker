@@ -31,7 +31,7 @@ cp .env.example .env
 npm start
 ```
 
-The backend will be running at http://localhost:5000
+The backend will be running at http://localhost:5100
 
 ### 2. Frontend Setup
 
@@ -48,7 +48,7 @@ npm install
 npm start
 ```
 
-The frontend will automatically open at http://localhost:3000
+The frontend will automatically open at http://localhost:3100
 
 ## Getting Your Jira API Token
 
@@ -60,14 +60,14 @@ The frontend will automatically open at http://localhost:3000
 
 ## Verify It's Working
 
-1. Check the backend health endpoint: http://localhost:5000/api/health
-2. Check the frontend loads at: http://localhost:3000
+1. Check the backend health endpoint: http://localhost:5100/api/health
+2. Check the frontend loads at: http://localhost:3100
 3. The data should load automatically after a few seconds
 
 ## Common Issues
 
 **Backend won't start:**
-- Make sure port 5000 is not in use
+- Make sure port 5100 is not in use
 - Verify your `.env` file exists and has correct values
 
 **Frontend shows errors:**

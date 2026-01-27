@@ -67,7 +67,7 @@ delivery-planning-tracker/
    JIRA_URL=https://your-domain.atlassian.net
    JIRA_USERNAME=your-email@example.com
    JIRA_API_TOKEN=your-api-token-here
-   PORT=5000
+   PORT=5100
    ```
 
    To generate a Jira API token:
@@ -85,7 +85,7 @@ delivery-planning-tracker/
    npm run dev
    ```
 
-   The API will be running at http://localhost:5000
+   The API will be running at http://localhost:5100
 
 ### Frontend Setup
 
@@ -104,7 +104,7 @@ delivery-planning-tracker/
    npm start
    ```
 
-   The application will open at http://localhost:3000
+   The application will open at http://localhost:3100
 
 4. Build for production:
    ```bash
@@ -183,6 +183,30 @@ const teamCapacity = {
 };
 ```
 
+**Current Team Configuration:**
+- **DBA**: 2 engineers (Garvin Wong, Adrian Mazur)
+- **DevOps**: 4 engineers (Phill Dellow, Vakhtangi Mestvirishvili, Robert Higgins, Alex Eastlake)
+- **Technology Operations**: 3 engineers (Mark Fairmaid, Ann Winston, Graham Wilson)
+- **Private Cloud**: 5 engineers (Keith Wijey-Wardna, Mike Cave, Andrew Sumner, Sundaresan Thandvan, Suresh Kaniyappa)
+
+### Team Assignment Rules
+
+The system automatically assigns tickets to teams based on the following logic:
+
+**DBA Team Assignment:**
+- **All tickets assigned to Garvin Wong or Adrian Mazur are automatically assigned to the DBA team**, regardless of which project they belong to
+- This ensures all DBA-related work is tracked under the DBA team capacity
+
+**Other Projects:**
+- **DTI Project**: Uses the Team custom field, or assigns to DBA if assignee is Garvin/Adrian
+- **INFRA Project**: Assigned to Technology Operations team
+- **DevOps Project**: Assigned to DevOps team
+- **Technology Group (TG) Project**: Assigned to DBA if assignee is Garvin/Adrian, otherwise Other
+- **Other Projects**: Assigned to Other team
+
+**Validation:**
+The system includes built-in validation to ensure no ticket is counted in multiple teams. Each API request logs validation results confirming unique ticket assignment.
+
 ### Work Estimation Rules
 
 The system uses default estimates for unestimated tickets:
@@ -249,8 +273,8 @@ npm start
 - Ensure your Jira user has permission to access the projects
 
 **Error: "ECONNREFUSED"**
-- Make sure the backend server is running on port 5000
-- Check if another process is using port 5000
+- Make sure the backend server is running on port 5100
+- Check if another process is using port 5100
 
 ### Frontend Issues
 
@@ -260,7 +284,7 @@ npm start
 
 **Empty or no data displayed**
 - Check browser console for errors
-- Verify the backend API is returning data by visiting http://localhost:5000/api/health
+- Verify the backend API is returning data by visiting http://localhost:5100/api/health
 
 ## License
 

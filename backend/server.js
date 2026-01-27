@@ -43,16 +43,16 @@ app.get('/api/capacity-planning', async (req, res) => {
         members: ['Garvin Wong', 'Adrian Mazur']
       },
       'DevOps': {
-        engineers: 6,
-        members: ['Andrew Sumner', 'Phill Dellow', 'Vakhtangi Mestvirishvili', 'Sundaresan Thandvan', 'Robert Higgins', 'Alex Eastlake']
+        engineers: 4,
+        members: ['Phill Dellow', 'Vakhtangi Mestvirishvili', 'Robert Higgins', 'Alex Eastlake']
       },
       'Technology Operations': {
-        engineers: 4,
-        members: ['Mark Fairmaid', 'Ann Winston', 'Suresh Kaniyappa', 'Graham Wilson']
+        engineers: 3,
+        members: ['Mark Fairmaid', 'Ann Winston', 'Graham Wilson']
       },
       'Private Cloud': {
-        engineers: 2,
-        members: ['Keith Wijey-Wardna', 'Mike Cave']
+        engineers: 5,
+        members: ['Keith Wijey-Wardna', 'Mike Cave', 'Andrew Sumner', 'Sundaresan Thandvan', 'Suresh Kaniyappa']
       }
     };
 
@@ -218,6 +218,7 @@ app.get('/api/capacity-planning', async (req, res) => {
     // Calculate team workload
     const assigneeWorkload = {};
     const individualAssignees = {};
+    const issueToTeamMap = {}; // Track which team each issue is assigned to
 
     openIssues.forEach(issue => {
       if (issue.fields.issuetype?.name === 'Epic') {
@@ -227,7 +228,10 @@ app.get('/api/capacity-planning', async (req, res) => {
       let teamName;
       const assigneeName = issue.fields.assignee?.displayName || 'Unassigned';
 
-      if (issue.fields.project?.key === 'DTI') {
+      // Check if assigned to DBA team members first (applies to all projects)
+      if (assigneeName === 'Garvin Wong' || assigneeName === 'Adrian Mazur') {
+        teamName = 'DBA';
+      } else if (issue.fields.project?.key === 'DTI') {
         const teamField = issue.fields.customfield_10001;
         if (teamField && teamField.name) {
           teamName = teamField.name;
@@ -235,13 +239,6 @@ app.get('/api/capacity-planning', async (req, res) => {
           teamName = teamField;
         } else {
           teamName = 'Unassigned Team';
-        }
-
-        if (teamName === 'Unassigned Team') {
-          const assigneeName = issue.fields.assignee?.displayName || '';
-          if (assigneeName === 'Garvin Wong' || assigneeName === 'Adrian Mazur') {
-            teamName = 'DBA';
-          }
         }
       } else {
         const projectKey = issue.fields.project?.key;
@@ -263,6 +260,12 @@ app.get('/api/capacity-planning', async (req, res) => {
       if (issue.fields.project?.key === 'DTI' && teamName === 'Unassigned Team') {
         teamName = 'Other';
       }
+
+      // Validation: Check if this issue was already assigned to a team
+      if (issueToTeamMap[issue.key]) {
+        console.warn(`WARNING: Issue ${issue.key} is being assigned to multiple teams: ${issueToTeamMap[issue.key]} and ${teamName}`);
+      }
+      issueToTeamMap[issue.key] = teamName;
 
       if (!assigneeWorkload[teamName]) {
         assigneeWorkload[teamName] = {
@@ -918,6 +921,22 @@ app.get('/api/capacity-planning', async (req, res) => {
         };
       }
     });
+
+    // Validation: Check totals
+    const totalTicketsAcrossTeams = Object.values(assigneeWorkload).reduce((sum, team) => sum + team.openTickets, 0);
+    const uniqueIssuesProcessed = Object.keys(issueToTeamMap).length;
+    const nonEpicIssues = openIssues.filter(i => i.fields.issuetype?.name !== 'Epic').length;
+
+    console.log(`\nValidation:`);
+    console.log(`- Total open issues fetched: ${openIssues.length}`);
+    console.log(`- Non-Epic issues: ${nonEpicIssues}`);
+    console.log(`- Unique issues processed: ${uniqueIssuesProcessed}`);
+    console.log(`- Total tickets across all teams: ${totalTicketsAcrossTeams}`);
+    if (uniqueIssuesProcessed === totalTicketsAcrossTeams && uniqueIssuesProcessed === nonEpicIssues) {
+      console.log(`✓ No duplicate counting detected - all counts match!`);
+    } else {
+      console.warn(`⚠ WARNING: Counts don't match - possible duplicate or missing tickets!`);
+    }
 
     console.log(`\nTeam Capacity Utilization:`);
     Object.keys(teamCapacityMetrics).forEach(team => {
