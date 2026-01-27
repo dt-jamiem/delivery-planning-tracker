@@ -808,6 +808,17 @@
   background: #e0e0e0;
 }
 
+.member-badge.partial-capacity {
+  background: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffc107;
+  font-style: italic;
+}
+
+.member-badge.partial-capacity:hover {
+  background: #ffe69c;
+}
+
 .team-jira-link {
   margin-top: 1rem;
   padding-top: 1rem;

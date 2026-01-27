@@ -25,6 +25,16 @@ function CapacityPlanning({ data }) {
     }));
   };
 
+  // Helper function to identify partial capacity members (< 100% FTE)
+  const partialCapacityMembers = [
+    'Alex Eastlake',    // DevOps - 50%
+    'Mark Fairmaid'     // Technology Operations - 50%
+  ];
+
+  const isPartialCapacity = (memberName) => {
+    return partialCapacityMembers.includes(memberName);
+  };
+
   // Generate Jira URL for team filter - matches backend team assignment logic
   const generateJiraTeamUrl = (teamName, members) => {
     const baseUrl = 'https://datatorque.atlassian.net/issues/';
@@ -393,7 +403,13 @@ function CapacityPlanning({ data }) {
                     <strong>Team Members:</strong>
                     <div className="members-list">
                       {metrics.members.map((member, idx) => (
-                        <span key={idx} className="member-badge">{member}</span>
+                        <span
+                          key={idx}
+                          className={`member-badge ${isPartialCapacity(member) ? 'partial-capacity' : ''}`}
+                          title={isPartialCapacity(member) ? `${member} (50% capacity)` : member}
+                        >
+                          {member}
+                        </span>
                       ))}
                     </div>
                   </div>
