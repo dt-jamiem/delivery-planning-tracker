@@ -47,7 +47,7 @@ app.get('/api/capacity-planning', async (req, res) => {
         members: ['Phill Dellow', 'Vakhtangi Mestvirishvili', 'Robert Higgins', 'Alex Eastlake']
       },
       'Technology Operations': {
-        engineers: 3,
+        engineers: 2.5, // Mark Fairmaid is 50% allocated (0.5 FTE)
         members: ['Mark Fairmaid', 'Ann Winston', 'Graham Wilson']
       },
       'Private Cloud': {

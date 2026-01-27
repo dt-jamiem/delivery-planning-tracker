@@ -188,7 +188,7 @@ const teamCapacity = {
 **Current Team Configuration:**
 - **DBA**: 2 engineers (Garvin Wong, Adrian Mazur)
 - **DevOps**: 3.5 engineers (Phill Dellow, Vakhtangi Mestvirishvili, Robert Higgins, Alex Eastlake at 50%)
-- **Technology Operations**: 3 engineers (Mark Fairmaid, Ann Winston, Graham Wilson)
+- **Technology Operations**: 2.5 engineers (Mark Fairmaid at 50%, Ann Winston, Graham Wilson)
 - **Private Cloud**: 5 engineers (Keith Wijey-Wardna, Mike Cave, Andrew Sumner, Sundaresan Thandvan, Suresh Kaniyappa)
 
 ### Team Assignment Rules
