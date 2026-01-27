@@ -224,7 +224,11 @@ The system includes built-in validation to ensure no ticket is counted in multip
 
 The system uses default estimates for unestimated tickets:
 
-**User Stories & Tasks:**
+**User Stories:**
+- To Do: 10 hours
+- In Progress: 5 hours
+
+**Tasks:**
 - To Do: 8 hours
 - In Progress: 4 hours
 

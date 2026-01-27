@@ -197,7 +197,8 @@ app.get('/api/capacity-planning', async (req, res) => {
         return 0;
       }
 
-      const isSoftwareItem = issueTypeName === 'Story' || issueTypeName === 'Task';
+      const isUserStory = issueTypeName === 'Story';
+      const isTask = issueTypeName === 'Task';
       const requestType = issue.fields.customfield_10010?.requestType?.name;
       const higherComplexityTypes = [
         'Build or Deployment Issues',
@@ -209,13 +210,17 @@ app.get('/api/capacity-planning', async (req, res) => {
                                  higherComplexityTypes.includes(requestType);
 
       if (statusCategory === 'To Do') {
-        if (isSoftwareItem) {
-          return 8 * 3600;
+        if (isUserStory) {
+          return 10 * 3600; // User Stories: 10 hours
+        } else if (isTask) {
+          return 8 * 3600; // Tasks: 8 hours
         }
         return isHigherComplexity ? 6 * 3600 : 4 * 3600;
       } else if (statusCategory === 'In Progress') {
-        if (isSoftwareItem) {
-          return 4 * 3600;
+        if (isUserStory) {
+          return 5 * 3600; // User Stories: 5 hours
+        } else if (isTask) {
+          return 4 * 3600; // Tasks: 4 hours
         }
         return isHigherComplexity ? 3 * 3600 : 2 * 3600;
       } else {
@@ -284,6 +289,11 @@ app.get('/api/capacity-planning', async (req, res) => {
         console.warn(`WARNING: Issue ${issue.key} is being assigned to multiple teams: ${issueToTeamMap[issue.key]} and ${teamName}`);
       }
       issueToTeamMap[issue.key] = teamName;
+
+      // Debug logging for DevOps team assignments
+      if (teamName === 'DevOps') {
+        console.log(`DevOps: ${issue.key} - Project: ${issue.fields.project?.key}, Assignee: ${assigneeName}, Team Field: ${issue.fields.customfield_10001?.name || 'none'}`);
+      }
 
       if (!assigneeWorkload[teamName]) {
         assigneeWorkload[teamName] = {
