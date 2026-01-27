@@ -56,6 +56,14 @@ app.get('/api/capacity-planning', async (req, res) => {
       }
     };
 
+    // Create a mapping of assignee names to their teams
+    const assigneeToTeam = {};
+    Object.keys(teamCapacity).forEach(teamName => {
+      teamCapacity[teamName].members.forEach(memberName => {
+        assigneeToTeam[memberName] = teamName;
+      });
+    });
+
     // Calculate available capacity per team
     // Assuming 6 hours productive work per day
     const hoursPerDay = 6;
@@ -253,12 +261,22 @@ app.get('/api/capacity-planning', async (req, res) => {
         } else if (projectKey === 'DevOps') {
           teamName = 'DevOps';
         } else {
-          teamName = 'Other';
+          // Before assigning to 'Other', check if assignee is a member of any team
+          if (assigneeToTeam[assigneeName]) {
+            teamName = assigneeToTeam[assigneeName];
+          } else {
+            teamName = 'Other';
+          }
         }
       }
 
       if (issue.fields.project?.key === 'DTI' && teamName === 'Unassigned Team') {
-        teamName = 'Other';
+        // Before assigning to 'Other', check if assignee is a member of any team
+        if (assigneeToTeam[assigneeName]) {
+          teamName = assigneeToTeam[assigneeName];
+        } else {
+          teamName = 'Other';
+        }
       }
 
       // Validation: Check if this issue was already assigned to a team

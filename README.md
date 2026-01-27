@@ -191,18 +191,29 @@ const teamCapacity = {
 
 ### Team Assignment Rules
 
-The system automatically assigns tickets to teams based on the following logic:
+The system automatically assigns tickets to teams based on the following logic (applied in priority order):
 
-**DBA Team Assignment:**
+**Priority 1 - DBA Team Assignment:**
 - **All tickets assigned to Garvin Wong or Adrian Mazur are automatically assigned to the DBA team**, regardless of which project they belong to
 - This ensures all DBA-related work is tracked under the DBA team capacity
 
-**Other Projects:**
-- **DTI Project**: Uses the Team custom field, or assigns to DBA if assignee is Garvin/Adrian
+**Priority 2 - Project-Based Assignment:**
+- **DTI Project**: Uses the Team custom field (`customfield_10001`)
 - **INFRA Project**: Assigned to Technology Operations team
 - **DevOps Project**: Assigned to DevOps team
-- **Technology Group (TG) Project**: Assigned to DBA if assignee is Garvin/Adrian, otherwise Other
-- **Other Projects**: Assigned to Other team
+
+**Priority 3 - Assignee-Based Fallback:**
+- If a ticket doesn't have a team field set (or would be assigned to "Other"), the system checks if the assignee is a member of any configured team
+- **If the assignee is a team member, the ticket is automatically assigned to their team**
+- This ensures work assigned to team members is always tracked under their team's capacity, regardless of project or missing team fields
+
+**Priority 4 - Other:**
+- Only tickets with unassigned or non-team-member assignees are categorized as "Other"
+
+**Benefits:**
+- Accurate capacity tracking by ensuring work follows team members
+- Prevents team member work from being misclassified as "Other"
+- Maintains team accountability regardless of project structure
 
 **Validation:**
 The system includes built-in validation to ensure no ticket is counted in multiple teams. Each API request logs validation results confirming unique ticket assignment.
