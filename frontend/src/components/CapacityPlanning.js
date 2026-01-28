@@ -48,21 +48,21 @@ function CapacityPlanning({ data }) {
     // Use project keys: TG (Technology Group), TR (Technology Roadmap)
     if (teamName === 'DBA') {
       // DBA: Team UUID OR assigned to DBA members
-      jql = `("Team[Team]" = a092fa48-f541-4358-90b8-ba6caccceb72 OR (project IN (TG, TechOps, DEVOPS, DBA, DTI, INFRA, TR) AND assignee IN (${assigneeList}))) AND statusCategory != Done AND issuetype != Epic`;
+      jql = `("Team[Team]" = a092fa48-f541-4358-90b8-ba6caccceb72 OR (project IN (TG, TechOps, DEVOPS, DBA, DTI, INFRA, TR) AND assignee IN (${assigneeList}))) AND statusCategory != Done AND issuetype NOT IN (Epic, subTaskIssueTypes())`;
     } else if (teamName === 'DevOps') {
       // DevOps: Based on baseJQL projects + Team field + assignee fallback (excluding DBA members but allowing unassigned)
       // Note: Add both "Phill Dellow" and "Phillip Dellow" to catch name variations
       const devOpsAssignees = `"Phill Dellow", "Phillip Dellow", "Vakhtangi Mestvirishvili", "Robert Higgins", "Alex Eastlake"`;
-      jql = `((project = DEVOPS OR "Team" = "DevOps" OR (project IN (TG, TechOps, DEVOPS, DBA, DTI, INFRA, TR) AND assignee IN (${devOpsAssignees})) OR (project IN (TG, TechOps, DEVOPS, DBA, DTI, INFRA, TR) AND "Team[Team]" = "9b7aba3a-a76b-46b8-8a3b-658baad7c1a3")) AND (assignee IS EMPTY OR assignee NOT IN ("Garvin Wong", "Adrian Mazur"))) AND issuetype != Epic AND statusCategory != Done`;
+      jql = `((project = DEVOPS OR "Team" = "DevOps" OR (project IN (TG, TechOps, DEVOPS, DBA, DTI, INFRA, TR) AND assignee IN (${devOpsAssignees})) OR (project IN (TG, TechOps, DEVOPS, DBA, DTI, INFRA, TR) AND "Team[Team]" = "9b7aba3a-a76b-46b8-8a3b-658baad7c1a3")) AND (assignee IS EMPTY OR assignee NOT IN ("Garvin Wong", "Adrian Mazur"))) AND issuetype NOT IN (Epic, subTaskIssueTypes()) AND statusCategory != Done`;
     } else if (teamName === 'Technology Operations') {
       // Tech Ops: INFRA project OR Team=Tech Ops OR assigned to Tech Ops members (excluding DBA members but allowing unassigned)
-      jql = `((project = INFRA OR "Team" = "Technology Operations" OR (project IN (TG, TechOps, DEVOPS, DBA, DTI, INFRA, TR) AND assignee IN (${assigneeList})) OR (project IN (TG, TechOps, DEVOPS, DBA, DTI, INFRA, TR) AND "Team[Team]" = "01c3b859-1307-41e3-8a88-24c701dd1713")) AND (assignee IS EMPTY OR assignee NOT IN ("Garvin Wong", "Adrian Mazur"))) AND issuetype != Epic AND statusCategory != Done`;
+      jql = `((project = INFRA OR "Team" = "Technology Operations" OR (project IN (TG, TechOps, DEVOPS, DBA, DTI, INFRA, TR) AND assignee IN (${assigneeList})) OR (project IN (TG, TechOps, DEVOPS, DBA, DTI, INFRA, TR) AND "Team[Team]" = "01c3b859-1307-41e3-8a88-24c701dd1713")) AND (assignee IS EMPTY OR assignee NOT IN ("Garvin Wong", "Adrian Mazur"))) AND issuetype NOT IN (Epic, subTaskIssueTypes()) AND statusCategory != Done`;
     } else if (teamName === 'Private Cloud') {
       // Private Cloud: Team UUID OR assigned to Keith/Mike
-      jql = `("Team[Team]" = d38d3529-7bff-4e2c-a747-1e7f2d6e61e9 OR (project IN (TG, TechOps, DEVOPS, DBA, DTI, INFRA, TR) AND assignee IN ("Keith Wijey-Wardna", "Mike Cave"))) AND statusCategory != Done AND issuetype != Epic`;
+      jql = `("Team[Team]" = d38d3529-7bff-4e2c-a747-1e7f2d6e61e9 OR (project IN (TG, TechOps, DEVOPS, DBA, DTI, INFRA, TR) AND assignee IN ("Keith Wijey-Wardna", "Mike Cave"))) AND statusCategory != Done AND issuetype NOT IN (Epic, subTaskIssueTypes())`;
     } else {
       // Fallback: assignee filter across all projects
-      jql = `(project IN (TG, TechOps, DEVOPS, DBA, DTI, INFRA, TR) AND assignee IN (${assigneeList})) AND issuetype != Epic AND statusCategory != Done`;
+      jql = `(project IN (TG, TechOps, DEVOPS, DBA, DTI, INFRA, TR) AND assignee IN (${assigneeList})) AND issuetype NOT IN (Epic, subTaskIssueTypes()) AND statusCategory != Done`;
     }
 
     return `${baseUrl}?jql=${encodeURIComponent(jql)}`;
