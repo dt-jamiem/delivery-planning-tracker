@@ -227,6 +227,10 @@ The system includes built-in validation to ensure no ticket is counted in multip
 
 The system uses default estimates for unestimated tickets:
 
+**Security Alerts** (INFRA/TechOps tickets under epics INFRA-78, INFRA-79, or INFRA-157):
+- To Do: 4 hours
+- In Progress: 2 hours
+
 **User Stories:**
 - To Do: 10 hours
 - In Progress: 5 hours

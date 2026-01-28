@@ -188,6 +188,21 @@ app.get('/api/capacity-planning', async (req, res) => {
       const projectKey = issue.fields.project?.key;
       const issueTypeName = issue.fields.issuetype?.name;
       const statusCategory = issue.fields.status?.statusCategory?.name;
+      const parentKey = issue.fields.parent?.key;
+
+      // Security Alert tickets under specific INFRA epics
+      const securityAlertParents = ['INFRA-78', 'INFRA-79', 'INFRA-157'];
+      if ((projectKey === 'INFRA' || projectKey === 'TechOps') &&
+          parentKey &&
+          securityAlertParents.includes(parentKey)) {
+        if (statusCategory === 'To Do') {
+          return 4 * 3600; // Security Alerts: 4 hours
+        } else if (statusCategory === 'In Progress') {
+          return 2 * 3600; // Security Alerts: 2 hours
+        } else {
+          return 0;
+        }
+      }
 
       const qualifies = projectKey === 'DTI' ||
                        issueTypeName === 'Story' ||

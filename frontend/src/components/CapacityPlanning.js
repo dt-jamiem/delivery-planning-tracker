@@ -343,8 +343,9 @@ function CapacityPlanning({ data }) {
       <div className="info-note">
         <p>
           <strong>Estimate Notes:</strong> Tickets with existing estimates use actual values.
-          For unestimated tickets, default estimates are applied: User Stories (10h To Do, 5h In Progress),
-          Tasks (8h To Do, 4h In Progress), DTI Higher Complexity requests like Build/Deployment Issues (6h To Do, 3h In Progress),
+          For unestimated tickets, default estimates are applied: Security Alerts under INFRA-78, INFRA-79, or INFRA-157 (4h To Do, 2h In Progress),
+          User Stories (10h To Do, 5h In Progress), Tasks (8h To Do, 4h In Progress),
+          DTI Higher Complexity requests like Build/Deployment Issues (6h To Do, 3h In Progress),
           and DTI Standard requests (4h To Do, 2h In Progress). Done tickets = 0 hours.
         </p>
       </div>
