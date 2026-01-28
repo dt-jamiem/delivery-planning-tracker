@@ -18,6 +18,8 @@ A standalone application extracted from the jira-dashboard project, focused spec
 - **Team Capacity Utilization**: Track team capacity and workload across engineering teams
   - Each team tile includes a Jira link button that opens a filtered view of all tickets for that team
   - JQL queries match the backend's team assignment logic for accurate filtering
+  - Partial capacity team members (< 100% FTE) are visually highlighted with a yellow/amber background and italic styling
+  - Hover over partial capacity members to see their allocation percentage (e.g., "50% capacity")
 - **Team Workload Distribution**: View open tickets and estimated effort by team and individual
 - **Work Categories**: Organize work into BAU, Deliver, and Improve buckets
 - **Ticket Flow Trends**: Visualize ticket creation and resolution trends over time
