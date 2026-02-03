@@ -27,11 +27,13 @@ A standalone application extracted from the jira-dashboard project, focused spec
 - **Ticket Flow Trends**: Visualize ticket creation and resolution trends over time
 - **Effort Trend Analysis**: Weekly breakdown of effort added vs removed with net change tracking
 - **Initiative Completion Tracking**: Individual tiles for each Technology Roadmap (TR) initiative showing:
+  - Theme displayed as a bold title at the top of each tile
+  - Initiative key and summary with completion percentage right-aligned
+  - Visual progress bar showing work breakdown: green (Done), blue (In Progress), grey (To Do)
+  - Idea Short Description field providing context for each initiative's purpose
   - Completion percentage based on all work (historical + current)
-  - Detailed breakdown: Done, In Progress, and To Do ticket counts
-  - Initiative metadata: issue type, current status, delivery priority (1-5), and theme
   - Accurate metrics using ALL historical completed tickets, not limited by date filters
-  - Initiatives sorted by delivery priority (highest first), then by completion percentage
+  - Initiatives sorted by delivery priority (highest first), then by theme (alphabetically)
 
 ## Project Structure
 
@@ -292,8 +294,7 @@ The Initiatives Overview tab displays additional metadata for each Technology Ro
 
 **Initiative Sorting Logic:**
 1. Primary: Delivery Priority (5 → 4 → 3 → 2 → 1 → unprioritized)
-2. Secondary: Completion Percentage (ascending)
-3. Tertiary: Total Ticket Count (descending)
+2. Secondary: Theme (alphabetically, with null values last)
 
 ## Technology Stack
 

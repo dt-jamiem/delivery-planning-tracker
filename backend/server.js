@@ -1115,7 +1115,7 @@ app.get('/api/capacity-planning', async (req, res) => {
       }
     });
 
-    // Sort by delivery priority (descending, highest first), then by completion percent (ascending), then by total tickets (descending)
+    // Sort by delivery priority (descending, highest first), then by theme (alphabetically)
     initiativeMetrics.sort((a, b) => {
       // Treat null/undefined priority as 0 (lowest)
       const priorityA = a.deliveryPriority || 0;
@@ -1125,11 +1125,11 @@ app.get('/api/capacity-planning', async (req, res) => {
         return priorityB - priorityA; // Descending: highest priority first
       }
 
-      if (a.completionPercent !== b.completionPercent) {
-        return a.completionPercent - b.completionPercent;
-      }
+      // Sort by theme alphabetically (null/undefined last)
+      const themeA = a.theme || 'zzzz'; // Use 'zzzz' to push null/undefined to the end
+      const themeB = b.theme || 'zzzz';
 
-      return b.totalTickets - a.totalTickets;
+      return themeA.localeCompare(themeB);
     });
 
     console.log(`\nTechnology Roadmap Individual Initiatives (${initiativeMetrics.length} active):`);

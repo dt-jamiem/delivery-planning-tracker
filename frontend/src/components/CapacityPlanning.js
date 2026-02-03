@@ -566,39 +566,42 @@ function CapacityPlanning({ data }) {
               <div className="initiatives-grid">
                 {initiativeMetrics.map((initiative, index) => (
                   <div key={index} className="insight-card roadmap-tile initiative-tile">
+                    {initiative.theme && (
+                      <div className="initiative-theme-title">{initiative.theme}</div>
+                    )}
                     <div className="insight-label" title={initiative.summary}>
                       {initiative.key}
                     </div>
-                    <div className="initiative-summary" title={initiative.summary}>
-                      {initiative.summary}
-                    </div>
-                    <div className="insight-value">{initiative.completionPercent}%</div>
-                    <div className="insight-subtitle">
-                      {initiative.doneTickets} of {initiative.totalTickets} tickets complete
-                    </div>
-                    <div className="initiative-estimate">
-                      Estimated remaining: <strong>{initiative.estimatedHours || 0}h</strong>
-                    </div>
-                    {initiative.deliveryPriority && (
-                      <div className="initiative-priority">
-                        Priority: <strong>{initiative.deliveryPriority}</strong>
+                    <div className="initiative-summary-row">
+                      <div className="initiative-summary" title={initiative.summary}>
+                        {initiative.summary}
                       </div>
-                    )}
+                      <div className="initiative-completion-percent">
+                        {initiative.completionPercent}%
+                      </div>
+                    </div>
+                    <div className="initiative-progress-bar">
+                      <div
+                        className="progress-segment progress-done"
+                        style={{width: `${(initiative.doneTickets / initiative.totalTickets * 100) || 0}%`}}
+                        title={`Done: ${initiative.doneTickets} tickets`}
+                      ></div>
+                      <div
+                        className="progress-segment progress-inprogress"
+                        style={{width: `${(initiative.inProgressTickets / initiative.totalTickets * 100) || 0}%`}}
+                        title={`In Progress: ${initiative.inProgressTickets} tickets`}
+                      ></div>
+                      <div
+                        className="progress-segment progress-todo"
+                        style={{width: `${(initiative.toDoTickets / initiative.totalTickets * 100) || 0}%`}}
+                        title={`To Do: ${initiative.toDoTickets} tickets`}
+                      ></div>
+                    </div>
                     {initiative.description && (
                       <div className="initiative-description">
                         {initiative.description}
                       </div>
                     )}
-                    <div className="roadmap-breakdown">
-                      <span className="roadmap-status done">Done: {initiative.doneTickets}</span>
-                      <span className="roadmap-status in-progress">In Progress: {initiative.inProgressTickets}</span>
-                      <span className="roadmap-status to-do">To Do: {initiative.toDoTickets}</span>
-                    </div>
-                    <div className="initiative-meta">
-                      {initiative.theme && <span className="initiative-theme">{initiative.theme}</span>}
-                      <span className="initiative-type">{initiative.issueType}</span>
-                      <span className="initiative-status">{initiative.status}</span>
-                    </div>
                   </div>
                 ))}
               </div>
