@@ -283,6 +283,13 @@ The Initiatives Overview tab displays additional metadata for each Technology Ro
 - Helps identify and group related initiatives by organizational focus area
 - Optional field - only displayed when set
 
+**Idea Short Description** (`customfield_11147`):
+- Brief text description of the initiative's purpose and goals
+- Displayed in a highlighted section below the initiative badges
+- Provides context and clarity for what each initiative aims to achieve
+- Optional field - only displayed when set
+- Example: "Deliver a production-ready GHE platform for teams to start using"
+
 **Initiative Sorting Logic:**
 1. Primary: Delivery Priority (5 → 4 → 3 → 2 → 1 → unprioritized)
 2. Secondary: Completion Percentage (ascending)

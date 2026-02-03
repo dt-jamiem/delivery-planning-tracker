@@ -7,13 +7,21 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [capacityData, setCapacityData] = useState(null);
+  const [isFetching, setIsFetching] = useState(false);
 
   useEffect(() => {
     fetchData();
   }, []);
 
   const fetchData = async () => {
+    // Prevent multiple simultaneous requests
+    if (isFetching) {
+      console.log('Request already in progress, skipping...');
+      return;
+    }
+
     try {
+      setIsFetching(true);
       setLoading(true);
       setError(null);
 
@@ -24,6 +32,7 @@ function App() {
       setError(err.response?.data?.error || 'Failed to fetch data from Jira');
     } finally {
       setLoading(false);
+      setIsFetching(false);
     }
   };
 
