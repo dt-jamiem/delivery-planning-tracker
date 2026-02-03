@@ -43,16 +43,16 @@ app.get('/api/capacity-planning', async (req, res) => {
         members: ['Garvin Wong', 'Adrian Mazur']
       },
       'DevOps': {
-        engineers: 3.5, // Alex Eastlake is 50% allocated (0.5 FTE)
-        members: ['Phill Dellow', 'Vakhtangi Mestvirishvili', 'Robert Higgins', 'Alex Eastlake']
+        engineers: 3,
+        members: ['Phill Dellow', 'Vakhtangi Mestvirishvili', 'Robert Higgins']
       },
       'Technology Operations': {
         engineers: 2.5, // Mark Fairmaid is 50% allocated (0.5 FTE)
         members: ['Mark Fairmaid', 'Ann Winston', 'Graham Wilson']
       },
       'Private Cloud': {
-        engineers: 5,
-        members: ['Keith Wijey-Wardna', 'Mike Cave', 'Andrew Sumner', 'Sundaresan Thandvan', 'Suresh Kaniyappa']
+        engineers: 6.5, // Alex Eastlake is 50% allocated (0.5 FTE)
+        members: ['Keith Wijey-Wardna', 'Mike Cave', 'Andrew Sumner', 'Sundaresan Thandvan', 'Suresh Kaniyappa', 'Alex Eastlake', 'Natalie Grant']
       }
     };
 
