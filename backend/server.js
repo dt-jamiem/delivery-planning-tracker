@@ -1010,7 +1010,7 @@ app.get('/api/capacity-planning', async (req, res) => {
       };
     });
 
-    // Count work items linked to each TR item
+    // Count open work items linked to each TR item
     openIssues.forEach(issue => {
       const parentEpic = issue.fields.parent?.key;
       let trItemKey = null;
@@ -1029,9 +1029,7 @@ app.get('/api/capacity-planning', async (req, res) => {
         trItemToWork[trItemKey].openTickets++;
 
         const statusCategory = issue.fields.status?.statusCategory?.name;
-        if (statusCategory === 'Done') {
-          trItemToWork[trItemKey].doneTickets++;
-        } else if (statusCategory === 'In Progress') {
+        if (statusCategory === 'In Progress') {
           trItemToWork[trItemKey].inProgressTickets++;
         } else {
           trItemToWork[trItemKey].toDoTickets++;
@@ -1039,12 +1037,33 @@ app.get('/api/capacity-planning', async (req, res) => {
       }
     });
 
+    // Count resolved work items linked to each TR item
+    resolvedIssues.forEach(issue => {
+      const parentEpic = issue.fields.parent?.key;
+      let trItemKey = null;
+
+      // Find which TR item this work belongs to
+      if (parentEpic && epicToDiscoveryIdea[parentEpic]) {
+        trItemKey = `${epicToDiscoveryIdea[parentEpic].key}: ${epicToDiscoveryIdea[parentEpic].summary}`;
+      } else {
+        const discoveryIdea = findDiscoveryIdea(issue);
+        if (discoveryIdea) {
+          trItemKey = `${discoveryIdea.key}: ${discoveryIdea.summary}`;
+        }
+      }
+
+      if (trItemKey && trItemToWork[trItemKey]) {
+        trItemToWork[trItemKey].doneTickets++;
+      }
+    });
+
     // Calculate metrics for each TR item that has work
     Object.values(trItemToWork).forEach(item => {
-      // Include TR items that have linked work OR are themselves not done
-      if (item.openTickets > 0 || item.statusCategory !== 'Done') {
-        item.totalTickets = item.openTickets;
+      // Calculate total tickets = open + done
+      item.totalTickets = item.openTickets + item.doneTickets;
 
+      // Include TR items that have linked work OR are themselves not done
+      if (item.totalTickets > 0 || item.statusCategory !== 'Done') {
         if (item.totalTickets > 0) {
           item.completionPercent = Math.round((item.doneTickets / item.totalTickets) * 100);
         } else if (item.statusCategory === 'Done') {
