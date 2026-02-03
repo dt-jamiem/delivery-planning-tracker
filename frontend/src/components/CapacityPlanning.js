@@ -16,7 +16,7 @@ function CapacityPlanning({ data }) {
     );
   }
 
-  const { summary, assigneeWorkload, ticketFlow, parentGrouping, teamCapacity, effortTrend, roadmapMetrics } = data;
+  const { summary, assigneeWorkload, ticketFlow, parentGrouping, teamCapacity, effortTrend, initiativeMetrics } = data;
 
   const toggleGroup = (groupKey) => {
     setExpandedGroups(prev => ({
@@ -559,52 +559,34 @@ function CapacityPlanning({ data }) {
       {/* Initiatives Overview Tab Content */}
       {activeTab === 'initiatives' && (
         <div className="tab-content">
-          {/* Technology Roadmap Metrics */}
-          {roadmapMetrics && (
+          {/* Individual Initiative Metrics */}
+          {initiativeMetrics && initiativeMetrics.length > 0 && (
             <div className="capacity-section">
-              <h3>Technology Roadmap Status</h3>
-              <div className="capacity-insights">
-                {/* Initiative Tile */}
-                <div className="insight-card roadmap-tile">
-                  <div className="insight-label">Initiative</div>
-                  <div className="insight-value">{roadmapMetrics.Initiative?.completionPercent || 0}%</div>
-                  <div className="insight-subtitle">
-                    {roadmapMetrics.Initiative?.done || 0} of {roadmapMetrics.Initiative?.total || 0} complete
+              <h3>Technology Roadmap Initiatives</h3>
+              <div className="initiatives-grid">
+                {initiativeMetrics.map((initiative, index) => (
+                  <div key={index} className="insight-card roadmap-tile initiative-tile">
+                    <div className="insight-label" title={initiative.summary}>
+                      {initiative.key}
+                    </div>
+                    <div className="initiative-summary" title={initiative.summary}>
+                      {initiative.summary}
+                    </div>
+                    <div className="insight-value">{initiative.completionPercent}%</div>
+                    <div className="insight-subtitle">
+                      {initiative.doneTickets} of {initiative.totalTickets} tickets complete
+                    </div>
+                    <div className="roadmap-breakdown">
+                      <span className="roadmap-status done">Done: {initiative.doneTickets}</span>
+                      <span className="roadmap-status in-progress">In Progress: {initiative.inProgressTickets}</span>
+                      <span className="roadmap-status to-do">To Do: {initiative.toDoTickets}</span>
+                    </div>
+                    <div className="initiative-meta">
+                      <span className="initiative-type">{initiative.issueType}</span>
+                      <span className="initiative-status">{initiative.status}</span>
+                    </div>
                   </div>
-                  <div className="roadmap-breakdown">
-                    <span className="roadmap-status done">Done: {roadmapMetrics.Initiative?.done || 0}</span>
-                    <span className="roadmap-status in-progress">In Progress: {roadmapMetrics.Initiative?.inProgress || 0}</span>
-                    <span className="roadmap-status to-do">To Do: {roadmapMetrics.Initiative?.toDo || 0}</span>
-                  </div>
-                </div>
-
-                {/* Improvement Tile */}
-                <div className="insight-card roadmap-tile">
-                  <div className="insight-label">Improvement</div>
-                  <div className="insight-value">{roadmapMetrics.Improvement?.completionPercent || 0}%</div>
-                  <div className="insight-subtitle">
-                    {roadmapMetrics.Improvement?.done || 0} of {roadmapMetrics.Improvement?.total || 0} complete
-                  </div>
-                  <div className="roadmap-breakdown">
-                    <span className="roadmap-status done">Done: {roadmapMetrics.Improvement?.done || 0}</span>
-                    <span className="roadmap-status in-progress">In Progress: {roadmapMetrics.Improvement?.inProgress || 0}</span>
-                    <span className="roadmap-status to-do">To Do: {roadmapMetrics.Improvement?.toDo || 0}</span>
-                  </div>
-                </div>
-
-                {/* Delivery Tile */}
-                <div className="insight-card roadmap-tile">
-                  <div className="insight-label">Delivery</div>
-                  <div className="insight-value">{roadmapMetrics.Delivery?.completionPercent || 0}%</div>
-                  <div className="insight-subtitle">
-                    {roadmapMetrics.Delivery?.done || 0} of {roadmapMetrics.Delivery?.total || 0} complete
-                  </div>
-                  <div className="roadmap-breakdown">
-                    <span className="roadmap-status done">Done: {roadmapMetrics.Delivery?.done || 0}</span>
-                    <span className="roadmap-status in-progress">In Progress: {roadmapMetrics.Delivery?.inProgress || 0}</span>
-                    <span className="roadmap-status to-do">To Do: {roadmapMetrics.Delivery?.toDo || 0}</span>
-                  </div>
-                </div>
+                ))}
               </div>
             </div>
           )}

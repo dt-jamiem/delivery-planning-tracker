@@ -987,52 +987,89 @@ app.get('/api/capacity-planning', async (req, res) => {
       console.log(`- ${team}: ${metrics.workloadHours}h / ${metrics.availableCapacityHours}h = ${metrics.utilizationPercent}% utilization`);
     });
 
-    // Calculate Technology Roadmap metrics by issue type
-    const roadmapMetrics = {
-      Initiative: { total: 0, inProgress: 0, done: 0, toDo: 0, completionPercent: 0 },
-      Improvement: { total: 0, inProgress: 0, done: 0, toDo: 0, completionPercent: 0 },
-      Delivery: { total: 0, inProgress: 0, done: 0, toDo: 0, completionPercent: 0 }
-    };
+    // Calculate individual initiative metrics from Technology Roadmap
+    const initiativeMetrics = [];
+
+    // Create a map of TR items to their related work
+    const trItemToWork = {};
 
     discoveryIdeas.forEach(idea => {
-      const issueType = idea.fields.issuetype?.name;
+      const ideaKey = `${idea.key}: ${idea.fields.summary}`;
+      trItemToWork[ideaKey] = {
+        key: idea.key,
+        summary: idea.fields.summary,
+        issueType: idea.fields.issuetype?.name,
+        status: idea.fields.status?.name,
+        statusCategory: idea.fields.status?.statusCategory?.name,
+        openTickets: 0,
+        doneTickets: 0,
+        inProgressTickets: 0,
+        toDoTickets: 0,
+        totalTickets: 0,
+        completionPercent: 0
+      };
+    });
 
-      // Map "Improve" to "Improvement" and "Deliver" to "Delivery"
-      let metricKey = null;
-      if (issueType === 'Initiative') {
-        metricKey = 'Initiative';
-      } else if (issueType === 'Improve' || issueType === 'Improvement') {
-        metricKey = 'Improvement';
-      } else if (issueType === 'Deliver' || issueType === 'Delivery') {
-        metricKey = 'Delivery';
+    // Count work items linked to each TR item
+    openIssues.forEach(issue => {
+      const parentEpic = issue.fields.parent?.key;
+      let trItemKey = null;
+
+      // Find which TR item this work belongs to
+      if (parentEpic && epicToDiscoveryIdea[parentEpic]) {
+        trItemKey = `${epicToDiscoveryIdea[parentEpic].key}: ${epicToDiscoveryIdea[parentEpic].summary}`;
+      } else {
+        const discoveryIdea = findDiscoveryIdea(issue);
+        if (discoveryIdea) {
+          trItemKey = `${discoveryIdea.key}: ${discoveryIdea.summary}`;
+        }
       }
 
-      if (metricKey && roadmapMetrics[metricKey]) {
-        roadmapMetrics[metricKey].total++;
+      if (trItemKey && trItemToWork[trItemKey]) {
+        trItemToWork[trItemKey].openTickets++;
 
-        const statusCategory = idea.fields.status?.statusCategory?.name;
+        const statusCategory = issue.fields.status?.statusCategory?.name;
         if (statusCategory === 'Done') {
-          roadmapMetrics[metricKey].done++;
+          trItemToWork[trItemKey].doneTickets++;
         } else if (statusCategory === 'In Progress') {
-          roadmapMetrics[metricKey].inProgress++;
-        } else if (statusCategory === 'To Do') {
-          roadmapMetrics[metricKey].toDo++;
+          trItemToWork[trItemKey].inProgressTickets++;
+        } else {
+          trItemToWork[trItemKey].toDoTickets++;
         }
       }
     });
 
-    // Calculate completion percentages
-    Object.keys(roadmapMetrics).forEach(key => {
-      const metric = roadmapMetrics[key];
-      if (metric.total > 0) {
-        metric.completionPercent = Math.round((metric.done / metric.total) * 100);
+    // Calculate metrics for each TR item that has work
+    Object.values(trItemToWork).forEach(item => {
+      // Include TR items that have linked work OR are themselves not done
+      if (item.openTickets > 0 || item.statusCategory !== 'Done') {
+        item.totalTickets = item.openTickets;
+
+        if (item.totalTickets > 0) {
+          item.completionPercent = Math.round((item.doneTickets / item.totalTickets) * 100);
+        } else if (item.statusCategory === 'Done') {
+          item.completionPercent = 100;
+        } else {
+          item.completionPercent = 0;
+        }
+
+        initiativeMetrics.push(item);
       }
     });
 
-    console.log(`\nTechnology Roadmap Metrics:`);
-    Object.keys(roadmapMetrics).forEach(type => {
-      const metrics = roadmapMetrics[type];
-      console.log(`- ${type}: ${metrics.done}/${metrics.total} (${metrics.completionPercent}% complete) - In Progress: ${metrics.inProgress}, To Do: ${metrics.toDo}`);
+    // Sort by completion percent (ascending) then by total tickets (descending)
+    initiativeMetrics.sort((a, b) => {
+      if (a.completionPercent !== b.completionPercent) {
+        return a.completionPercent - b.completionPercent;
+      }
+      return b.totalTickets - a.totalTickets;
+    });
+
+    console.log(`\nTechnology Roadmap Individual Initiatives (${initiativeMetrics.length} active):`);
+    initiativeMetrics.forEach(item => {
+      console.log(`- ${item.key}: ${item.summary}`);
+      console.log(`  Type: ${item.issueType}, Status: ${item.status}`);
+      console.log(`  Work: ${item.doneTickets}/${item.totalTickets} done (${item.completionPercent}% complete) - In Progress: ${item.inProgressTickets}, To Do: ${item.toDoTickets}`);
     });
 
     res.json({
@@ -1056,7 +1093,7 @@ app.get('/api/capacity-planning', async (req, res) => {
         deliver: deliverGroups,
         improve: improveGroups
       },
-      roadmapMetrics: roadmapMetrics
+      initiativeMetrics: initiativeMetrics
     });
 
   } catch (error) {
