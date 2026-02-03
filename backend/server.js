@@ -158,7 +158,7 @@ app.get('/api/capacity-planning', async (req, res) => {
         const requestBody = {
           jql: discoveryIdeasJQL,
           maxResults: 50,
-          fields: ['summary', 'status', 'created', 'updated', 'issuetype', 'project', 'issuelinks', 'customfield_11183', 'customfield_11136', 'customfield_11147']
+          fields: ['summary', 'status', 'created', 'updated', 'issuetype', 'project', 'issuelinks', 'customfield_11183', 'customfield_11136', 'customfield_11147', 'customfield_11216']
         };
         if (nextPageToken) {
           requestBody.nextPageToken = nextPageToken;
@@ -1018,12 +1018,17 @@ app.get('/api/capacity-planning', async (req, res) => {
 
     discoveryIdeas.forEach(idea => {
       const ideaKey = `${idea.key}: ${idea.fields.summary}`;
+
       // Extract theme value from array
       const themeArray = idea.fields.customfield_11136;
       const theme = (themeArray && themeArray.length > 0 && themeArray[0].value) ? themeArray[0].value : null;
 
       // Extract "Idea Short Description" from customfield_11147
       const description = idea.fields.customfield_11147 || null;
+
+      // Extract RAG Status from customfield_11216
+      const ragStatusObj = idea.fields.customfield_11216;
+      const ragStatus = (ragStatusObj && ragStatusObj.value) ? ragStatusObj.value : null;
 
       trItemToWork[ideaKey] = {
         key: idea.key,
@@ -1034,6 +1039,7 @@ app.get('/api/capacity-planning', async (req, res) => {
         deliveryPriority: idea.fields.customfield_11183 || null,
         theme: theme,
         description: description,
+        ragStatus: ragStatus,
         openTickets: 0,
         doneTickets: 0,
         inProgressTickets: 0,
@@ -1135,7 +1141,7 @@ app.get('/api/capacity-planning', async (req, res) => {
     console.log(`\nTechnology Roadmap Individual Initiatives (${initiativeMetrics.length} active):`);
     initiativeMetrics.forEach(item => {
       console.log(`- ${item.key}: ${item.summary}`);
-      console.log(`  Type: ${item.issueType}, Status: ${item.status}`);
+      console.log(`  Type: ${item.issueType}, Status: ${item.status}, RAG: ${item.ragStatus || 'Not set'}`);
       console.log(`  Work: ${item.doneTickets}/${item.totalTickets} done (${item.completionPercent}% complete) - In Progress: ${item.inProgressTickets}, To Do: ${item.toDoTickets}`);
     });
 

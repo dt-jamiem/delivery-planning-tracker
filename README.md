@@ -28,7 +28,9 @@ A standalone application extracted from the jira-dashboard project, focused spec
 - **Effort Trend Analysis**: Weekly breakdown of effort added vs removed with net change tracking
 - **Initiative Completion Tracking**: Individual tiles for each Technology Roadmap (TR) initiative showing:
   - Theme displayed as a bold title at the top of each tile
+  - RAG Status badge with color-coded visual indicator (GREEN/AMBER/RED/NA)
   - Initiative key and summary with completion percentage right-aligned
+  - Estimated remaining hours displayed prominently
   - Visual progress bar showing work breakdown: green (Done), blue (In Progress), grey (To Do)
   - Idea Short Description field providing context for each initiative's purpose
   - Completion percentage based on all work (historical + current)
@@ -291,6 +293,17 @@ The Initiatives Overview tab displays additional metadata for each Technology Ro
 - Provides context and clarity for what each initiative aims to achieve
 - Optional field - only displayed when set
 - Example: "Deliver a production-ready GHE platform for teams to start using"
+
+**RAG Status** (`customfield_11216`):
+- Red-Amber-Green status indicator for initiative health and progress
+- Four possible values: GREEN, AMBER, RED, NA
+- Displayed as a color-coded badge below the theme title
+- Visual indicators:
+  - GREEN: Light green background with dark green text (on track)
+  - AMBER: Light orange/yellow background with dark orange text (at risk)
+  - RED: Light red background with dark red text (blocked/critical)
+  - NA: Gray background with dark gray text (not applicable/not set)
+- Optional field - only displayed when set
 
 **Initiative Sorting Logic:**
 1. Primary: Delivery Priority (5 → 4 → 3 → 2 → 1 → unprioritized)

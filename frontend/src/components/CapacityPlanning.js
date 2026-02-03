@@ -569,6 +569,11 @@ function CapacityPlanning({ data }) {
                     {initiative.theme && (
                       <div className="initiative-theme-title">{initiative.theme}</div>
                     )}
+                    {initiative.ragStatus && (
+                      <div className={`rag-status-badge rag-status-${initiative.ragStatus.toLowerCase()}`}>
+                        {initiative.ragStatus}
+                      </div>
+                    )}
                     <div className="insight-label" title={initiative.summary}>
                       {initiative.key}
                     </div>
@@ -578,6 +583,11 @@ function CapacityPlanning({ data }) {
                       </div>
                       <div className="initiative-completion-percent">
                         {initiative.completionPercent}%
+                      </div>
+                    </div>
+                    <div className="initiative-metrics-row">
+                      <div className="initiative-estimated-hours">
+                        {initiative.estimatedHours}h remaining
                       </div>
                     </div>
                     <div className="initiative-progress-bar">
