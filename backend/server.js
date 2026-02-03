@@ -987,6 +987,54 @@ app.get('/api/capacity-planning', async (req, res) => {
       console.log(`- ${team}: ${metrics.workloadHours}h / ${metrics.availableCapacityHours}h = ${metrics.utilizationPercent}% utilization`);
     });
 
+    // Calculate Technology Roadmap metrics by issue type
+    const roadmapMetrics = {
+      Initiative: { total: 0, inProgress: 0, done: 0, toDo: 0, completionPercent: 0 },
+      Improvement: { total: 0, inProgress: 0, done: 0, toDo: 0, completionPercent: 0 },
+      Delivery: { total: 0, inProgress: 0, done: 0, toDo: 0, completionPercent: 0 }
+    };
+
+    discoveryIdeas.forEach(idea => {
+      const issueType = idea.fields.issuetype?.name;
+
+      // Map "Improve" to "Improvement" and "Deliver" to "Delivery"
+      let metricKey = null;
+      if (issueType === 'Initiative') {
+        metricKey = 'Initiative';
+      } else if (issueType === 'Improve' || issueType === 'Improvement') {
+        metricKey = 'Improvement';
+      } else if (issueType === 'Deliver' || issueType === 'Delivery') {
+        metricKey = 'Delivery';
+      }
+
+      if (metricKey && roadmapMetrics[metricKey]) {
+        roadmapMetrics[metricKey].total++;
+
+        const statusCategory = idea.fields.status?.statusCategory?.name;
+        if (statusCategory === 'Done') {
+          roadmapMetrics[metricKey].done++;
+        } else if (statusCategory === 'In Progress') {
+          roadmapMetrics[metricKey].inProgress++;
+        } else if (statusCategory === 'To Do') {
+          roadmapMetrics[metricKey].toDo++;
+        }
+      }
+    });
+
+    // Calculate completion percentages
+    Object.keys(roadmapMetrics).forEach(key => {
+      const metric = roadmapMetrics[key];
+      if (metric.total > 0) {
+        metric.completionPercent = Math.round((metric.done / metric.total) * 100);
+      }
+    });
+
+    console.log(`\nTechnology Roadmap Metrics:`);
+    Object.keys(roadmapMetrics).forEach(type => {
+      const metrics = roadmapMetrics[type];
+      console.log(`- ${type}: ${metrics.done}/${metrics.total} (${metrics.completionPercent}% complete) - In Progress: ${metrics.inProgress}, To Do: ${metrics.toDo}`);
+    });
+
     res.json({
       summary: {
         totalOpenTickets: openIssues.length,
@@ -1007,7 +1055,8 @@ app.get('/api/capacity-planning', async (req, res) => {
         bau: bauGroups,
         deliver: deliverGroups,
         improve: improveGroups
-      }
+      },
+      roadmapMetrics: roadmapMetrics
     });
 
   } catch (error) {

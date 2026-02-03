@@ -978,3 +978,40 @@
   color: #6B778C;
   font-weight: 600;
 }
+
+/* Roadmap Tiles */
+.roadmap-tile {
+  position: relative;
+  padding-bottom: 2rem;
+}
+
+.roadmap-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e0e0e0;
+}
+
+.roadmap-status {
+  font-size: 0.85rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.roadmap-status.done {
+  color: #A9DE33;
+  background-color: rgba(169, 222, 51, 0.1);
+}
+
+.roadmap-status.in-progress {
+  color: #44546A;
+  background-color: rgba(68, 84, 106, 0.1);
+}
+
+.roadmap-status.to-do {
+  color: #6B778C;
+  background-color: rgba(107, 119, 140, 0.1);
+}
