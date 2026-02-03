@@ -1039,13 +1039,43 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #E97451;
   color: white;
   font-size: 1rem;
   font-weight: 700;
   border-radius: 50%;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   z-index: 1;
+}
+
+/* Priority 5 - Critical (Darkest Red) */
+.initiative-priority-badge.priority-5 {
+  background-color: #BF2600;
+  box-shadow: 0 2px 6px rgba(191, 38, 0, 0.3);
+}
+
+/* Priority 4 - High (Red-Orange) */
+.initiative-priority-badge.priority-4 {
+  background-color: #FF5630;
+  box-shadow: 0 2px 6px rgba(255, 86, 48, 0.3);
+}
+
+/* Priority 3 - Medium (Orange) */
+.initiative-priority-badge.priority-3 {
+  background-color: #FF8B00;
+  box-shadow: 0 2px 6px rgba(255, 139, 0, 0.3);
+}
+
+/* Priority 2 - Low (Amber) */
+.initiative-priority-badge.priority-2 {
+  background-color: #FFAB00;
+  box-shadow: 0 2px 6px rgba(255, 171, 0, 0.3);
+}
+
+/* Priority 1 - Very Low (Yellow) */
+.initiative-priority-badge.priority-1 {
+  background-color: #FFC400;
+  color: #172B4D;
+  box-shadow: 0 2px 6px rgba(255, 196, 0, 0.3);
 }
 
 .initiative-theme-title {

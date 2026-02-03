@@ -567,7 +567,9 @@ function CapacityPlanning({ data }) {
                 {initiativeMetrics.map((initiative, index) => (
                   <div key={index} className="insight-card roadmap-tile initiative-tile">
                     {initiative.deliveryPriority && (
-                      <div className="initiative-priority-badge">{initiative.deliveryPriority}</div>
+                      <div className={`initiative-priority-badge priority-${initiative.deliveryPriority}`}>
+                        {initiative.deliveryPriority}
+                      </div>
                     )}
                     {initiative.theme && (
                       <div className="initiative-theme-title">{initiative.theme}</div>
