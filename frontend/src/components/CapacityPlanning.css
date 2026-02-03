@@ -1056,6 +1056,21 @@
   font-size: 1rem;
 }
 
+.initiative-priority {
+  font-size: 0.85rem;
+  color: #44546A;
+  margin-bottom: 0.75rem;
+  padding: 0.5rem;
+  background-color: #f5f7fa;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.initiative-priority strong {
+  color: #E97451;
+  font-size: 1rem;
+}
+
 .initiative-meta {
   display: flex;
   gap: 0.5rem;

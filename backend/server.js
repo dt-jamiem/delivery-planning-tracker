@@ -158,7 +158,7 @@ app.get('/api/capacity-planning', async (req, res) => {
         const requestBody = {
           jql: discoveryIdeasJQL,
           maxResults: 50,
-          fields: ['summary', 'status', 'created', 'updated', 'issuetype', 'project', 'issuelinks']
+          fields: ['summary', 'status', 'created', 'updated', 'issuetype', 'project', 'issuelinks', 'customfield_11183']
         };
         if (nextPageToken) {
           requestBody.nextPageToken = nextPageToken;
@@ -1024,6 +1024,7 @@ app.get('/api/capacity-planning', async (req, res) => {
         issueType: idea.fields.issuetype?.name,
         status: idea.fields.status?.name,
         statusCategory: idea.fields.status?.statusCategory?.name,
+        deliveryPriority: idea.fields.customfield_11183 || null,
         openTickets: 0,
         doneTickets: 0,
         inProgressTickets: 0,
