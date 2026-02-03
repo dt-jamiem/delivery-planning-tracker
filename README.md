@@ -29,8 +29,9 @@ A standalone application extracted from the jira-dashboard project, focused spec
 - **Initiative Completion Tracking**: Individual tiles for each Technology Roadmap (TR) initiative showing:
   - Completion percentage based on all work (historical + current)
   - Detailed breakdown: Done, In Progress, and To Do ticket counts
-  - Initiative metadata: issue type and current status
+  - Initiative metadata: issue type, current status, delivery priority (1-5), and theme
   - Accurate metrics using ALL historical completed tickets, not limited by date filters
+  - Initiatives sorted by delivery priority (highest first), then by completion percentage
 
 ## Project Structure
 
@@ -265,6 +266,27 @@ The system groups epics under their parent Discovery Ideas (TR project items) ba
 - **Improve**: Improvement initiatives
 
 Only epics linked to TR project items with these issue types will be grouped under Discovery Ideas in the capacity planning view. Epics without such links will appear in the "Other" category.
+
+### Initiative Custom Fields
+
+The Initiatives Overview tab displays additional metadata for each Technology Roadmap (TR) initiative:
+
+**Delivery Priority** (`customfield_11183`):
+- Numeric priority rating from 1 (lowest) to 5 (highest)
+- Displayed as an orange badge at the top of each initiative tile
+- Initiatives are automatically sorted by priority (highest first)
+- Initiatives without a priority rating appear after prioritized items
+
+**Theme** (`customfield_11136`):
+- Categorizes initiatives by strategic theme (e.g., Security, Maintain, Transform)
+- Displayed as a green badge in the initiative metadata section
+- Helps identify and group related initiatives by organizational focus area
+- Optional field - only displayed when set
+
+**Initiative Sorting Logic:**
+1. Primary: Delivery Priority (5 → 4 → 3 → 2 → 1 → unprioritized)
+2. Secondary: Completion Percentage (ascending)
+3. Tertiary: Total Ticket Count (descending)
 
 ## Technology Stack
 
