@@ -23,6 +23,36 @@ const jiraAPI = axios.create({
   }
 });
 
+// Helper function to extract plain text from Atlassian Document Format (ADF)
+function extractTextFromADF(adfContent) {
+  if (!adfContent || !adfContent.content) return '';
+
+  let text = '';
+
+  function traverseNodes(nodes) {
+    if (!Array.isArray(nodes)) return;
+
+    for (const node of nodes) {
+      if (node.type === 'text' && node.text) {
+        text += node.text;
+      }
+
+      // Add spacing for paragraphs and other block elements
+      if (node.type === 'paragraph' || node.type === 'heading') {
+        if (node.content) {
+          traverseNodes(node.content);
+        }
+        text += '\n';
+      } else if (node.content) {
+        traverseNodes(node.content);
+      }
+    }
+  }
+
+  traverseNodes(adfContent.content);
+  return text.trim();
+}
+
 // Health check endpoint
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'Delivery Planning Tracker API is running' });
@@ -158,7 +188,7 @@ app.get('/api/capacity-planning', async (req, res) => {
         const requestBody = {
           jql: discoveryIdeasJQL,
           maxResults: 50,
-          fields: ['summary', 'status', 'created', 'updated', 'issuetype', 'project', 'issuelinks', 'customfield_11183', 'customfield_11136']
+          fields: ['summary', 'status', 'created', 'updated', 'issuetype', 'project', 'issuelinks', 'customfield_11183', 'customfield_11136', 'description']
         };
         if (nextPageToken) {
           requestBody.nextPageToken = nextPageToken;
@@ -1022,6 +1052,17 @@ app.get('/api/capacity-planning', async (req, res) => {
       const themeArray = idea.fields.customfield_11136;
       const theme = (themeArray && themeArray.length > 0 && themeArray[0].value) ? themeArray[0].value : null;
 
+      // Extract description - handle ADF format or plain text
+      let description = null;
+      if (idea.fields.description) {
+        if (typeof idea.fields.description === 'string') {
+          description = idea.fields.description;
+        } else if (idea.fields.description.content) {
+          // ADF format - extract text from content nodes
+          description = extractTextFromADF(idea.fields.description);
+        }
+      }
+
       trItemToWork[ideaKey] = {
         key: idea.key,
         summary: idea.fields.summary,
@@ -1030,6 +1071,7 @@ app.get('/api/capacity-planning', async (req, res) => {
         statusCategory: idea.fields.status?.statusCategory?.name,
         deliveryPriority: idea.fields.customfield_11183 || null,
         theme: theme,
+        description: description,
         openTickets: 0,
         doneTickets: 0,
         inProgressTickets: 0,

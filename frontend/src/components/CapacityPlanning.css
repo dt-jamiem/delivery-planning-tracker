@@ -1071,6 +1071,19 @@
   font-size: 1rem;
 }
 
+.initiative-description {
+  font-size: 0.9rem;
+  color: #44546A;
+  line-height: 1.5;
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  background-color: #f9fafb;
+  border-left: 3px solid #2C5CC5;
+  border-radius: 4px;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
 .initiative-meta {
   display: flex;
   gap: 0.5rem;
