@@ -277,7 +277,13 @@ The Initiatives Overview tab displays additional metadata for each Technology Ro
 
 **Delivery Priority** (`customfield_11183`):
 - Numeric priority rating from 1 (lowest) to 5 (highest)
-- Displayed as an orange badge at the top of each initiative tile
+- Displayed as a circular color-coded badge in the top right corner of each initiative tile
+- Visual priority indicators using a heat map:
+  - Priority 5 (Critical): Dark red badge - highest urgency
+  - Priority 4 (High): Red-orange badge
+  - Priority 3 (Medium): Orange badge
+  - Priority 2 (Low): Amber badge
+  - Priority 1 (Very Low): Yellow badge with dark text
 - Initiatives are automatically sorted by priority (highest first)
 - Initiatives without a priority rating appear after prioritized items
 
