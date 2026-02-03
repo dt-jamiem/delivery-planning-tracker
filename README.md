@@ -28,11 +28,14 @@ A standalone application extracted from the jira-dashboard project, focused spec
 - **Effort Trend Analysis**: Weekly breakdown of effort added vs removed with net change tracking
 - **Initiative Completion Tracking**: Individual tiles for each Technology Roadmap (TR) initiative showing:
   - Theme displayed as a bold title at the top of each tile
+  - Color-coded priority badge in the top right corner (Priority 5 = dark red, Priority 1 = yellow)
   - RAG Status badge with color-coded visual indicator (GREEN/AMBER/RED/NA)
-  - Initiative key and summary with completion percentage right-aligned
+  - Clickable initiative key (e.g., TR-12) that opens the Jira ticket directly in a new tab
+  - Initiative summary with completion percentage right-aligned
   - Estimated remaining hours displayed prominently
   - Visual progress bar showing work breakdown: green (Done), blue (In Progress), grey (To Do)
   - Idea Short Description field providing context for each initiative's purpose
+  - Status Update field showing current progress, blockers, or recent completions
   - Completion percentage based on all work (historical + current)
   - Accurate metrics using ALL historical completed tickets, not limited by date filters
   - Initiatives sorted by delivery priority (highest first), then by theme (alphabetically)
