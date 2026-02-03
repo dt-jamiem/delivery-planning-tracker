@@ -7,6 +7,7 @@ A standalone application extracted from the jira-dashboard project, focused spec
 ### Tab-Based Navigation
 - **Overview Tab**: High-level capacity insights, team utilization, and workload distribution
 - **Buckets Tab**: Detailed work breakdown by BAU, Deliver, and Improve categories
+- **Initiatives Overview Tab**: Focused view of improvement initiatives with summary metrics and detailed breakdown
 - **Trends Tab**: Historical ticket flow and effort trend analysis
 
 ### Key Metrics

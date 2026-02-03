@@ -27,7 +27,7 @@ function CapacityPlanning({ data }) {
 
   // Helper function to identify partial capacity members (< 100% FTE)
   const partialCapacityMembers = [
-    'Alex Eastlake',    // DevOps - 50%
+    'Alex Eastlake',    // Private Cloud - 50%
     'Mark Fairmaid'     // Technology Operations - 50%
   ];
 
@@ -58,8 +58,8 @@ function CapacityPlanning({ data }) {
       // Tech Ops: INFRA project OR Team=Tech Ops OR assigned to Tech Ops members (excluding DBA members but allowing unassigned)
       jql = `((project = INFRA OR "Team" = "Technology Operations" OR (project IN (TG, TechOps, DEVOPS, DBA, DTI, INFRA, TR) AND assignee IN (${assigneeList})) OR (project IN (TG, TechOps, DEVOPS, DBA, DTI, INFRA, TR) AND "Team[Team]" = "01c3b859-1307-41e3-8a88-24c701dd1713")) AND (assignee IS EMPTY OR assignee NOT IN ("Garvin Wong", "Adrian Mazur"))) AND issuetype NOT IN (Epic, subTaskIssueTypes()) AND statusCategory != Done`;
     } else if (teamName === 'Private Cloud') {
-      // Private Cloud: Team UUID OR assigned to Keith/Mike
-      jql = `("Team[Team]" = d38d3529-7bff-4e2c-a747-1e7f2d6e61e9 OR (project IN (TG, TechOps, DEVOPS, DBA, DTI, INFRA, TR) AND assignee IN ("Keith Wijey-Wardna", "Mike Cave"))) AND statusCategory != Done AND issuetype NOT IN (Epic, subTaskIssueTypes())`;
+      // Private Cloud: Team UUID OR assigned to team members
+      jql = `("Team[Team]" = d38d3529-7bff-4e2c-a747-1e7f2d6e61e9 OR (project IN (TG, TechOps, DEVOPS, DBA, DTI, INFRA, TR) AND assignee IN (${assigneeList}))) AND statusCategory != Done AND issuetype NOT IN (Epic, subTaskIssueTypes())`;
     } else {
       // Fallback: assignee filter across all projects
       jql = `(project IN (TG, TechOps, DEVOPS, DBA, DTI, INFRA, TR) AND assignee IN (${assigneeList})) AND issuetype NOT IN (Epic, subTaskIssueTypes()) AND statusCategory != Done`;
@@ -278,6 +278,12 @@ function CapacityPlanning({ data }) {
           onClick={() => setActiveTab('buckets')}
         >
           Buckets
+        </button>
+        <button
+          className={`tab-button ${activeTab === 'initiatives' ? 'active' : ''}`}
+          onClick={() => setActiveTab('initiatives')}
+        >
+          Initiatives Overview
         </button>
         <button
           className={`tab-button ${activeTab === 'trends' ? 'active' : ''}`}
@@ -546,6 +552,53 @@ function CapacityPlanning({ data }) {
               {renderGroupingSection(parentGrouping.deliver, 'Bucket 2: Deliver')}
               {renderGroupingSection(parentGrouping.improve, 'Bucket 3: Improve')}
             </>
+          )}
+        </div>
+      )}
+
+      {/* Initiatives Overview Tab Content */}
+      {activeTab === 'initiatives' && (
+        <div className="tab-content">
+          {/* Initiatives Summary */}
+          <div className="capacity-section">
+            <h3>Initiatives Summary</h3>
+            <div className="capacity-insights">
+              <div className="insight-card">
+                <div className="insight-label">Total Initiatives</div>
+                <div className="insight-value">{parentGrouping?.improve?.length || 0}</div>
+                <div className="insight-subtitle">Active initiatives in progress</div>
+              </div>
+              <div className="insight-card">
+                <div className="insight-label">Total Open Tickets</div>
+                <div className="insight-value">{initiativesTicketCount}</div>
+                <div className="insight-subtitle">Across all initiatives</div>
+              </div>
+              <div className="insight-card">
+                <div className="insight-label">Total Estimated Effort</div>
+                <div className="insight-value">{initiativesBacklogHours}h</div>
+                <div className="insight-subtitle">≈ {(initiativesBacklogHours / 6).toFixed(0)} working days</div>
+              </div>
+              <div className={`insight-card ${initiativesFTENeeded > 0 ? 'warning' : ''}`}>
+                <div className="insight-label">FTE Required (30 days)</div>
+                <div className="insight-value">{initiativesFTENeeded}</div>
+                <div className="insight-subtitle">Full-time engineers needed</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Initiatives Detail */}
+          {parentGrouping && parentGrouping.improve && renderGroupingSection(parentGrouping.improve, 'Initiatives Breakdown')}
+
+          {/* Empty State */}
+          {(!parentGrouping || !parentGrouping.improve || parentGrouping.improve.length === 0) && (
+            <div className="capacity-section">
+              <div style={{ textAlign: 'center', padding: '3rem', color: '#6B778C' }}>
+                <p>No initiatives currently tracked.</p>
+                <p style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>
+                  Initiatives are improvement projects linked to Technology Roadmap items.
+                </p>
+              </div>
+            </div>
           )}
         </div>
       )}
