@@ -579,9 +579,15 @@ function CapacityPlanning({ data }) {
                         {initiative.ragStatus}
                       </div>
                     )}
-                    <div className="insight-label" title={initiative.summary}>
+                    <a
+                      href={`https://datatorque.atlassian.net/browse/${initiative.key}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="insight-label initiative-key-link"
+                      title={`Open ${initiative.key} in Jira`}
+                    >
                       {initiative.key}
-                    </div>
+                    </a>
                     <div className="initiative-summary-row">
                       <div className="initiative-summary" title={initiative.summary}>
                         {initiative.summary}

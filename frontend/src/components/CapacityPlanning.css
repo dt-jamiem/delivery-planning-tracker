@@ -534,6 +534,23 @@
   letter-spacing: 0.5px;
 }
 
+.initiative-key-link {
+  color: #2C5CC5;
+  text-decoration: none;
+  display: block;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.initiative-key-link:hover {
+  color: #1a3e8a;
+  text-decoration: underline;
+}
+
+.initiative-key-link:active {
+  color: #0d2857;
+}
+
 .insight-value {
   font-size: 1.4rem;
   font-weight: 600;
