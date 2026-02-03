@@ -594,36 +594,6 @@ function CapacityPlanning({ data }) {
             </div>
           )}
 
-          {/* Initiatives Summary */}
-          <div className="capacity-section">
-            <h3>Initiatives Summary</h3>
-            <div className="capacity-insights">
-              <div className="insight-card">
-                <div className="insight-label">Total Initiatives</div>
-                <div className="insight-value">{parentGrouping?.improve?.length || 0}</div>
-                <div className="insight-subtitle">Active initiatives in progress</div>
-              </div>
-              <div className="insight-card">
-                <div className="insight-label">Total Open Tickets</div>
-                <div className="insight-value">{initiativesTicketCount}</div>
-                <div className="insight-subtitle">Across all initiatives</div>
-              </div>
-              <div className="insight-card">
-                <div className="insight-label">Total Estimated Effort</div>
-                <div className="insight-value">{initiativesBacklogHours}h</div>
-                <div className="insight-subtitle">≈ {(initiativesBacklogHours / 6).toFixed(0)} working days</div>
-              </div>
-              <div className={`insight-card ${initiativesFTENeeded > 0 ? 'warning' : ''}`}>
-                <div className="insight-label">FTE Required (30 days)</div>
-                <div className="insight-value">{initiativesFTENeeded}</div>
-                <div className="insight-subtitle">Full-time engineers needed</div>
-              </div>
-            </div>
-          </div>
-
-          {/* Initiatives Detail */}
-          {parentGrouping && parentGrouping.improve && renderGroupingSection(parentGrouping.improve, 'Initiatives Breakdown')}
-
           {/* Empty State */}
           {(!parentGrouping || !parentGrouping.improve || parentGrouping.improve.length === 0) && (
             <div className="capacity-section">
