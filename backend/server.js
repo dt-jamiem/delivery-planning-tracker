@@ -1029,7 +1029,8 @@ app.get('/api/capacity-planning', async (req, res) => {
         inProgressTickets: 0,
         toDoTickets: 0,
         totalTickets: 0,
-        completionPercent: 0
+        completionPercent: 0,
+        estimatedHours: 0
       };
     });
 
@@ -1057,6 +1058,11 @@ app.get('/api/capacity-planning', async (req, res) => {
         } else {
           trItemToWork[trItemKey].toDoTickets++;
         }
+
+        // Calculate estimated hours for this ticket
+        const estimateSeconds = issue.fields.timeoriginalestimate || getDefaultEstimate(issue);
+        const hours = Math.round(estimateSeconds / 3600);
+        trItemToWork[trItemKey].estimatedHours += hours;
       }
     });
 

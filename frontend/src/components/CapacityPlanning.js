@@ -576,6 +576,9 @@ function CapacityPlanning({ data }) {
                     <div className="insight-subtitle">
                       {initiative.doneTickets} of {initiative.totalTickets} tickets complete
                     </div>
+                    <div className="initiative-estimate">
+                      Estimated remaining: <strong>{initiative.estimatedHours || 0}h</strong>
+                    </div>
                     <div className="roadmap-breakdown">
                       <span className="roadmap-status done">Done: {initiative.doneTickets}</span>
                       <span className="roadmap-status in-progress">In Progress: {initiative.inProgressTickets}</span>
