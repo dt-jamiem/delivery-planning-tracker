@@ -612,6 +612,11 @@ function CapacityPlanning({ data }) {
                         {initiative.description}
                       </div>
                     )}
+                    {initiative.statusUpdate && (
+                      <div className="initiative-status-update">
+                        <strong>Status Update:</strong> {initiative.statusUpdate}
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>

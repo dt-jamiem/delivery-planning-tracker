@@ -158,7 +158,8 @@ app.get('/api/capacity-planning', async (req, res) => {
         const requestBody = {
           jql: discoveryIdeasJQL,
           maxResults: 50,
-          fields: ['summary', 'status', 'created', 'updated', 'issuetype', 'project', 'issuelinks', 'customfield_11183', 'customfield_11136', 'customfield_11147', 'customfield_11216']
+          fields: ['summary', 'status', 'created', 'updated', 'issuetype', 'project', 'issuelinks',
+                   'customfield_11183', 'customfield_11136', 'customfield_11147', 'customfield_11216', 'customfield_11249']
         };
         if (nextPageToken) {
           requestBody.nextPageToken = nextPageToken;
@@ -1030,6 +1031,9 @@ app.get('/api/capacity-planning', async (req, res) => {
       const ragStatusObj = idea.fields.customfield_11216;
       const ragStatus = (ragStatusObj && ragStatusObj.value) ? ragStatusObj.value : null;
 
+      // Extract Status Update from customfield_11249
+      const statusUpdate = idea.fields.customfield_11249 || null;
+
       trItemToWork[ideaKey] = {
         key: idea.key,
         summary: idea.fields.summary,
@@ -1040,6 +1044,7 @@ app.get('/api/capacity-planning', async (req, res) => {
         theme: theme,
         description: description,
         ragStatus: ragStatus,
+        statusUpdate: statusUpdate,
         openTickets: 0,
         doneTickets: 0,
         inProgressTickets: 0,

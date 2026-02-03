@@ -305,6 +305,13 @@ The Initiatives Overview tab displays additional metadata for each Technology Ro
   - NA: Gray background with dark gray text (not applicable/not set)
 - Optional field - only displayed when set
 
+**Status Update** (`customfield_11249`):
+- Free-text field for providing current status updates on initiative progress
+- Displayed in an orange-bordered section below the initiative description
+- Provides real-time context on progress, blockers, or recent completions
+- Optional field - only displayed when set
+- Example: "Completed in Jan 2026 - Planning for non-Zephyr and inactive legacy project migration underway"
+
 **Initiative Sorting Logic:**
 1. Primary: Delivery Priority (5 → 4 → 3 → 2 → 1 → unprioritized)
 2. Secondary: Theme (alphabetically, with null values last)
