@@ -7,7 +7,7 @@ A standalone application extracted from the jira-dashboard project, focused spec
 ### Tab-Based Navigation
 - **Overview Tab**: High-level capacity insights, team utilization, and workload distribution
 - **Buckets Tab**: Detailed work breakdown by BAU, Deliver, and Improve categories
-- **Initiatives Overview Tab**: Focused view of improvement initiatives with summary metrics and detailed breakdown
+- **Initiatives Overview Tab**: Technology Roadmap initiatives with completion tracking, showing all active TR items with their full scope (including historical completed work)
 - **Trends Tab**: Historical ticket flow and effort trend analysis
 
 ### Key Metrics
@@ -26,6 +26,11 @@ A standalone application extracted from the jira-dashboard project, focused spec
 - **Work Categories**: Organize work into BAU, Deliver, and Improve buckets
 - **Ticket Flow Trends**: Visualize ticket creation and resolution trends over time
 - **Effort Trend Analysis**: Weekly breakdown of effort added vs removed with net change tracking
+- **Initiative Completion Tracking**: Individual tiles for each Technology Roadmap (TR) initiative showing:
+  - Completion percentage based on all work (historical + current)
+  - Detailed breakdown: Done, In Progress, and To Do ticket counts
+  - Initiative metadata: issue type and current status
+  - Accurate metrics using ALL historical completed tickets, not limited by date filters
 
 ## Project Structure
 
