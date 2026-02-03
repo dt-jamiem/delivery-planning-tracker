@@ -1080,7 +1080,8 @@
 }
 
 .initiative-type,
-.initiative-status {
+.initiative-status,
+.initiative-theme {
   font-size: 0.75rem;
   padding: 0.25rem 0.75rem;
   border-radius: 12px;
@@ -1092,4 +1093,9 @@
 .initiative-status {
   background-color: #e8eef5;
   color: #44546A;
+}
+
+.initiative-theme {
+  background-color: #e1f5dc;
+  color: #2d662d;
 }

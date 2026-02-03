@@ -590,6 +590,7 @@ function CapacityPlanning({ data }) {
                       <span className="roadmap-status to-do">To Do: {initiative.toDoTickets}</span>
                     </div>
                     <div className="initiative-meta">
+                      {initiative.theme && <span className="initiative-theme">{initiative.theme}</span>}
                       <span className="initiative-type">{initiative.issueType}</span>
                       <span className="initiative-status">{initiative.status}</span>
                     </div>
