@@ -177,7 +177,30 @@ app.get('/api/capacity-planning', async (req, res) => {
       discoveryIdeas = [];
     }
 
-    console.log(`Capacity Planning: Collected ${openIssues.length} open tickets, ${recentIssues.length} recent tickets, ${resolvedIssues.length} resolved tickets, ${discoveryIdeas.length} discovery ideas`);
+    // Fetch ALL done tickets for initiative metrics (no date filter)
+    const allDoneTicketsJQL = `${baseJQL} AND statusCategory IN (Done) ORDER BY resolutiondate DESC`;
+    let allDoneIssues = [];
+    nextPageToken = null;
+    console.log(`Fetching all done tickets for initiatives...`);
+    do {
+      const requestBody = {
+        jql: allDoneTicketsJQL,
+        maxResults: 50,
+        fields: ['summary', 'status', 'assignee', 'created', 'updated', 'issuetype', 'priority', 'resolutiondate', 'timeoriginalestimate', 'project', 'parent', 'issuelinks', 'customfield_10001', 'customfield_10010']
+      };
+      if (nextPageToken) {
+        requestBody.nextPageToken = nextPageToken;
+      }
+      const response = await jiraAPI.post('/search/jql', requestBody);
+      allDoneIssues = allDoneIssues.concat(response.data.issues || []);
+      nextPageToken = response.data.nextPageToken;
+      console.log(`Fetched ${response.data.issues?.length || 0} done tickets, total so far: ${allDoneIssues.length}, isLast: ${response.data.isLast}`);
+      if (response.data.isLast || allDoneIssues.length >= 5000) {
+        break;
+      }
+    } while (nextPageToken);
+
+    console.log(`Capacity Planning: Collected ${openIssues.length} open tickets, ${recentIssues.length} recent tickets, ${resolvedIssues.length} resolved tickets, ${allDoneIssues.length} all done tickets, ${discoveryIdeas.length} discovery ideas`);
 
     // Helper function to calculate default estimate
     const getDefaultEstimate = (issue) => {
@@ -1037,8 +1060,8 @@ app.get('/api/capacity-planning', async (req, res) => {
       }
     });
 
-    // Count resolved work items linked to each TR item
-    resolvedIssues.forEach(issue => {
+    // Count all done work items linked to each TR item
+    allDoneIssues.forEach(issue => {
       const parentEpic = issue.fields.parent?.key;
       let trItemKey = null;
 
